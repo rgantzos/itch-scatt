@@ -3,6 +3,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const { Routes, ContextMenuCommandBuilder, ApplicationCommandType, PermissionFlagsBits, Client, ActionRowBuilder, MessageSelectMenu, ButtonBuilder, WebhookClient, GatewayIntentBits, SlashCommandBuilder, EmbedBuilder, Partials } = require('discord.js');
+const { exec } = require("child_process");
 const { REST } = require('@discordjs/rest');
 const rest = new REST({ version: '10' }).setToken(process.env.token);
 const scatt = {
@@ -14,11 +15,12 @@ const scatt = {
     "server_changes": "1043042679111561257",
     "modmail": "954823644415135826",
     "cookieboard": "955181553535832145",
-    "logs": "1042565392775774229",
+    "logs": "1046079063447584849",
     "info": "945342441987391548",
     "bots": "964549623375101962",
     "welcome": "945348575083233290",
-    "welcoming": "973239218518245386"
+    "welcoming": "973239218518245386",
+    "staff_cmd": "945351020530245652"
   },
   min_reactions: 4,
   rgantzos: "810336621198835723",
@@ -42,7 +44,9 @@ const scatt = {
   active: {
     minimum: 50,
     role: "1043052399943761980"
-  }
+  },
+  moderator: "961725317427384442",
+  whitelist: ['fart', 'sex', 'sexy', 'hell', 'poop', 'porn', 'preteen', 'p0rn', 'screw', 'screwing']
 }
 const dbClient = new MongoClient(process.env.database, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 scatt.discordJs = require("discord.js")
@@ -55,14 +59,16 @@ async function weeklyActive() {
   var guild = info.guild
   var role = await guild.roles.fetch(scatt.active.role)
   lb.forEach(async function(el, i) {
+    try {
+    var member = await guild.members.fetch(el.id)
+    if (member) {
     if (i < scatt.active.minimum) {
-      var member = await guild.members.fetch(el.id)
       if (!member.roles.cache.some(role => role.id === scatt.active.role)) {
         await member.roles.add(role, "Top 50 on leaderboard.");
       }
     } else {
       if (member.roles.cache.some(role => role.id === scatt.active.role)) {
-        await el.roles.remove(role, "No longer top 50 on leaderboard.");
+        await member.roles.remove(role, "No longer top 50 on leaderboard.");
       }
     }
 
@@ -74,9 +80,11 @@ async function weeklyActive() {
       }
     } else {
       if (member.roles.cache.some(role => role.id === scatt.top_member.role)) {
-        await el.roles.remove(nextRole, "No longer top 3 on leaderboard.");
+        await member.roles.remove(nextRole, "No longer top 3 on leaderboard.");
       }
     }
+    }
+    } catch(err) {}
   })
   var members = await dbClient.db('Scatt').collection('weekly').find({}).toArray()
   members.forEach(async function(el) {
@@ -126,16 +134,94 @@ const client = new scatt.discordJs.Client({
   }
 });
 
+function getConfigurationEmbed(full) {
+  if (full) {
+  var channelText = ``
+  Object.keys(scatt.channels).forEach(function(el) {
+    if (channelText !== '') {
+      channelText = channelText+`\n${(el[0].toUpperCase() + el.substring(1)).replaceAll('_', ' ')}: <#${scatt.channels[el]}>`
+    } else {
+      channelText = channelText+`${(el[0].toUpperCase() + el.substring(1)).replaceAll('_', ' ')}: <#${scatt.channels[el]}>`
+    }
+  })
+  var roleText = ``
+  Object.keys(scatt.ping_roles).forEach(function(el) {
+    if (roleText !== '') {
+      roleText = roleText+`\n${(el[0].toUpperCase() + el.substring(1)).replaceAll('_', ' ')}: <@&${scatt.ping_roles[el]}>`
+    } else {
+      roleText = roleText+`${(el[0].toUpperCase() + el.substring(1)).replaceAll('_', ' ')}: <@&${scatt.ping_roles[el]}>`
+    }
+  })
+  }
+  var config = new EmbedBuilder()
+  .setTitle("🔧 Configurations")
+  .addFields(
+		{ name: 'Bot', value: `<@${client.user.id}> (${client.user.tag})`, inline: false },
+		{ name: 'Moderator', value: `<@&${scatt.moderator}>`, inline: false },
+		{ name: 'Cookie Camper', value: `Role: <@&${scatt.cookieCamper.role}>\nMinimum Rank: ${scatt.cookieCamper.minimumRank.toString()}\nChannel: <#${scatt.cookieCamper.main_channel}>`, inline: false },
+    { name: 'Active Member', value: `Role: <@&${scatt.active.role}>\nMinimum Rank: ${scatt.active.minimum.toString()}`, inline: false },
+    { name: 'Top Member', value: `Role: <@&${scatt.top_member.role}>\nCount: ${scatt.top_member.count.toString()}`, inline: false },
+	)
+  .setThumbnail(client.user.avatarURL())
+    if (full) {
+      config.addFields(
+        { name: 'Channels', value: channelText, inline: false },
+    { name: 'Roles', value: roleText, inline: false },
+      )
+    }
+  return config
+}
+
 async function main() {
+  try {
   await dbClient.connect();
-  console.log("connected")
+  console.log("Connected to database.")
+    try {
+      if (!client.user) {
+        console.log("Unable to connect to Discord. Killing and trying again.")
+    exec("kill 1")
+      }
+    } catch(err) {
+      console.log("Unable to connect to Discord. Killing and trying again.")
+    exec("kill 1")
+    }
+  } catch(err) {
+    console.log("Unable to connect to database. Killing and trying again.")
+    exec("kill 1")
+  }
 }
 main()
+
+scatt.log = async function(message) {
+  var channel = await client.channels.fetch(scatt.channels.logs)
+  message.allowedMentions = {users:[]}
+  channel.send(message)
+}
+
+let getDailyUsers = new CronJob('0 8 * * *', getDaily)
+getDailyUsers.start()
+async function getDaily() {
+  var members = await dbClient.db('Scatt').collection('daily').find({}).toArray()
+  var spoken = []
+  members.forEach(function(el) {
+    if (el.messages !== 0 && !spoken.includes(el.id)) {
+      spoken.push(el.id)
+    }
+  })
+  var dailyMembers = `:white_sun_small_cloud: Today, ${spoken.length.toString()} were chatting! They were:\n\n- <@${spoken.join('>\n- <@')}>`
+  scatt.log({content:dailyMembers})
+  members.forEach(async function(el) {
+    await dbClient.db('Scatt').collection('daily').updateOne({ "id": el.id }, { $set: { "messages": 0 } }, { upsert: true })
+  })
+}
 
 
 const viewWarns = new SlashCommandBuilder()
   .setName('view-warns')
   .setDescription("View your warnings.")
+const config = new SlashCommandBuilder()
+  .setName('config')
+  .setDescription("View the configurations for Scatt.")
 
 const roles = new SlashCommandBuilder()
   .setName('roles')
@@ -275,9 +361,10 @@ client.on('ready', async function() {
   console.log("Logged in as " + client.user.tag + "!")
   await rest.put(
     Routes.applicationCommands(client.user.id),
-    { body: [xp, warnings, viewWarns, roles, invite, modmail, say, isbadword] },
+    { body: [xp, warnings, viewWarns, roles, invite, modmail, say, isbadword, config] },
   );
   //resetCookieCampers()
+  //weeklyActive()
   var channel = await client.channels.fetch(scatt.channels.info)
   var mainEmbed = new EmbedBuilder()
     .setTitle("Welcome to the ScratchTools Server!")
@@ -357,6 +444,15 @@ async function getLeaderboard() {
   var topUsers = []
   var topAll = []
   var members = await dbClient.db('Scatt').collection('userdata').find({}).toArray()
+  var alreadyIDs = []
+  var newMembers = []
+  members.forEach(function(el) {
+    if (!alreadyIDs.includes(el.id)) {
+      alreadyIDs.push(el.id)
+      newMembers.push(el)
+    }
+  })
+  members = newMembers
   members.forEach(function(el) {
     topXp.push(el.xp)
   })
@@ -384,6 +480,15 @@ async function getWeeklyLeaderboard() {
   var topUsers = []
   var topAll = []
   var members = await dbClient.db('Scatt').collection('weekly').find({}).toArray()
+  var alreadyIDs = []
+  var newMembers = []
+  members.forEach(function(el) {
+    if (!alreadyIDs.includes(el.id)) {
+      alreadyIDs.push(el.id)
+      newMembers.push(el)
+    }
+  })
+  members = newMembers
   members.forEach(function(el) {
     topXp.push(el.xp)
   })
@@ -422,6 +527,20 @@ client.on('guildMemberAdd', async function(member) {
   var banana = await client.channels.fetch(scatt.channels.welcoming)
   await banana.send({ content: `<@&973238564034859109> - <@${member.user.id}> just joined!`, components: [gotit] })
   }
+})
+
+client.on('messageDelete', async function(message) {
+  try {
+  if (message.author && !message.author.bot) {
+    if (message.content) {
+    scatt.log({content:`🗑️ <@${message.author.id}> had their message deleted in <#${message.channel.id}>:\n\n${message.content.toString()}`, files: message.attachments.map((attachment) => attachment) })
+    } else {
+      scatt.log({content:`🗑️ <@${message.author.id}> had their message deleted in <#${message.channel.id}>:`, files: message.attachments.map((attachment) => attachment) })
+    }
+  }
+    } catch(err) {
+    console.log(err)
+    }
 })
 
 client.on('messageCreate', async function(message) {
@@ -492,11 +611,17 @@ client.on('messageCreate', async function(message) {
       }
       await dbClient.db('Scatt').collection('weekly').insertOne(newUser)
     }
+    var dailyUser = await dbClient.db('Scatt').collection('daily').findOne({ id: message.author.id })
+    if (dailyUser) {
+      await dbClient.db('Scatt').collection('daily').updateOne({ "id": message.author.id }, { $set: { "messages": (dailyUser.messages + 1) } }, { upsert: true })
+    } else {
+      await dbClient.db('Scatt').collection('daily').insertOne({id:message.author.id, messages:1})
+    }
     if (message.channel.parentId !== scatt.channels.modmail) {
     var response = await fetch('https://raw.githubusercontent.com/web-mech/badwords/master/lib/lang.json')
     var data = await response.json()
     var deleteMessage = false
-    var whitelist = ['fart', 'sex', 'sexy', 'hell']
+    var whitelist = scatt.whitelist
     data.words.forEach(function(el) {
       if (message.content && 
           (message.content.toLowerCase().includes(' '+el+' ') || message.content.toLowerCase().startsWith(el+' ') || message.content.toLowerCase().endsWith(' '+el) || message.content.toLowerCase() === el) && !whitelist.includes(el)) {
@@ -551,8 +676,70 @@ client.on('messageCreate', async function(message) {
   }
 })
 
-client.on('reactionAdd', async function(reaction, user) {
-  console.log(reaction)
+client.on('messageReactionRemove', async function(reaction, user) {
+  try {
+  if (reaction._emoji.name === "🍪") {
+await reaction.fetch();
+    var existingMessage = await dbClient.db('Scatt').collection('cookieboard').findOne({ messageId: reaction.message.id })
+      var cookieboardChannel = await client.channels.fetch(scatt.channels.cookieboard)
+      if (existingMessage) {
+        var discordExistingMessage = await cookieboardChannel.messages.fetch(existingMessage.cookieboardMessageId)
+        if (discordExistingMessage) {
+          await discordExistingMessage.edit({content:`<@${reaction.message.author.id}> | 🍪x${reaction.count.toString()}`, allowedMentions:{users:[]}})
+        }
+      }
+  }
+  }catch(err) {
+    console.log(err)
+  }
+})
+
+client.on('messageReactionAdd', async function(reaction, user) {
+  try {
+  if (reaction._emoji.name === "🍪") {
+    await reaction.fetch();
+    var existingMessage = await dbClient.db('Scatt').collection('cookieboard').findOne({ messageId: reaction.message.id })
+      var cookieboardChannel = await client.channels.fetch(scatt.channels.cookieboard)
+      if (existingMessage) {
+        var discordExistingMessage = await cookieboardChannel.messages.fetch(existingMessage.cookieboardMessageId)
+        if (discordExistingMessage) {
+          await discordExistingMessage.edit({content:`<@${reaction.message.author.id}> | 🍪x${reaction.count.toString()}`, allowedMentions:{users:[]}})
+        }
+      } else {
+    if (reaction.count >= scatt.min_reactions) {
+      if (reaction.message.referenceId) {
+        var reference = await reaction.message.channel.messages.fetch(reaction.message.referenceId)
+        if (reference && reference.content) {
+          var content = `Replying to <@${reference.author.id}>:\n> ${reference.content.replaceAll('\n', '')}\n\n${reaction.message.content}`
+        } else {
+          var content = reaction.message.content
+        }
+      } else {
+        var content = reaction.message.content
+      }
+      var embed = new EmbedBuilder()
+      .setAuthor({ name: reaction.message.author.username, iconURL: reaction.message.author.avatarURL() })
+      .setFooter({text:"React to messages with a 🍪 to get them here!"})
+      .setColor(reaction.message.member.displayHexColor)
+      .setTimestamp(reaction.message.createdTimestamp)
+      if (reaction.message.content && reaction.message.content !== '') {
+        embed.setDescription(content)
+      }
+      var row = new ActionRowBuilder()
+      .addComponents(
+        new ButtonBuilder()
+        .setStyle('Link')
+        .setLabel("Go to Message")
+        .setURL(reaction.message.url)
+      )
+      var msg = await cookieboardChannel.send({embeds:[embed], content:`<@${reaction.message.author.id}> | 🍪x${reaction.count.toString()}`, allowedMentions:{users:[]}, components:[row], files: reaction.message.attachments.map((attachment) => attachment)})
+      await dbClient.db('Scatt').collection('cookieboard').insertOne({messageId: reaction.message.id, cookieboardMessageId: msg.id })
+      }
+      }
+  }
+} catch(err) {
+    console.log(err)
+}
 })
 
 client.on('interactionCreate', async function(interaction) {
@@ -680,11 +867,18 @@ client.on('interactionCreate', async function(interaction) {
   }
   if (interaction.type === 2) {
     const { commandName } = interaction
+    if (commandName === 'config') {
+      if (interaction.channel.id === scatt.channels.staff_cmd || interaction.channel.id === scatt.channels.bots) {
+      interaction.reply({ embeds:[getConfigurationEmbed(true)] })
+      } else {
+        interaction.reply({ embeds:[getConfigurationEmbed(false)] })
+      }
+    }
     if (commandName === 'is-bad-word') {
       var response = await fetch('https://raw.githubusercontent.com/web-mech/badwords/master/lib/lang.json')
     var data = await response.json()
     var deleteMessage = false
-    var whitelist = ['fart', 'sex', 'sexy']
+    var whitelist = scatt.whitelist
     data.words.forEach(function(el) {
       if (interaction.options.getString("message").toLowerCase().includes(el) && !whitelist.includes(el)) {
         deleteMessage = true
@@ -885,9 +1079,9 @@ client.on('interactionCreate', async function(interaction) {
             })
             var embed = new EmbedBuilder()
               .setTitle(`${userToUse.tag}'s Rank`)
-              .addFields({ name: '🎖️ Rank', value: '#' + rank.toString() + ' in the Server', inline: true })
+              .addFields({ name: '🎖️ Rank', value: '#' + rank.toString() + ' in the Server', inline: true }, { name: '\u200B', value: '\u200B', inline: true })
               .addFields({ name: '🌟 XP', value: user.xp.toString(), inline: true })
-              .addFields({ name: '🏃 Level', value: Math.floor(((user.xp) / 1500)).toString(), inline: true })
+              .addFields({ name: '🏃 Level', value: Math.floor(((user.xp) / 1500)).toString(), inline: true }, { name: '\u200B', value: '\u200B', inline:true })
               .setAuthor({ name: userToUse.username, iconURL: userToUse.avatarURL() })
               .setThumbnail(userToUse.avatarURL())
 
@@ -957,9 +1151,13 @@ client.on('guildMemberUpdate', async (before, after) => {
         try {
           if (after.user.id !== scatt.rgantzos) {
             after.setNickname(null)
+            scatt.log({ content:"We fixed <@"+after.user.id+">'s nickname to comply with the rules." })
           }
-        } catch (err) { }
+        } catch (err) {
+          scatt.log({ content:"We tried fixing <@"+after.user.id+">'s nickname, but we couldn't."})
+        }
         before.user.send({ content: "⚠️ Your nickname conflicted with the username/nickname of another server member, so we changed it." })
+        
       }
     }
   }
