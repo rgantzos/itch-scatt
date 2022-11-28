@@ -769,7 +769,7 @@ client.on("messageCreate", async function (message) {
           number: 0,
         });
       }
-      oldNumber[0].number = 0;
+      oldNumber = [{number: 0}]
       if (oldNumber[0].number + 1 === tried) {
         if (oldNumber[0].user !== message.author.id) {
           message.react(scatt.emojis.successful);
