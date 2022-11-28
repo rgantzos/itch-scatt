@@ -1164,6 +1164,22 @@ client.on("messageReactionAdd", async function (reaction, user) {
             components: [row],
             files: reaction.message.attachments.map((attachment) => attachment),
           });
+          var timeToBoard = ((new Date()).getTime() - (new Date(reaction.message.createdTimestamp)).getTime())
+          var records = await dbClient.db("Scatt").collection("records").findOne({name:"Cookieboard Speedrun"})
+          if (records) {
+            var channel = await client.channels.fetch(scatt.channels.server_changes)
+            channel.send({content:`<:st_emoji_party:1008191843281936414> <@${reaction.message.author.id}>'s message just broke the record for fastest a message has gotten onto the Cookieboard! It only took ${(timeToBoard/1000).toString()} seconds!`})
+            await dbClient
+        .db("Scatt")
+        .collection("records")
+        .updateOne(
+          { name: "Cookieboard Speedrun" },
+          { $set: { value: timeToBoard, holder: msg.url } },
+          { upsert: true }
+        );
+          } else {
+            await dbClient.db("Scatt").collection("records").insertOne({ name: "Cookieboard Speedrun", holder: msg.url, value: timeToBoard });
+          }
           await dbClient.db("Scatt").collection("cookieboard").insertOne({
             messageId: reaction.message.id,
             cookieboardMessageId: msg.id,
