@@ -795,7 +795,7 @@ client.on("messageCreate", async function (message) {
               { $set: { number: 0, user: client.user.id } },
               { upsert: true }
             );
-          var recordDB = dbClient
+          var recordDB = await dbClient
             .db("Scatt")
             .collection("records")
             .findOne({ name: "Highest Counting" });
@@ -837,7 +837,7 @@ client.on("messageCreate", async function (message) {
             { $set: { number: 0, user: client.user.id } },
             { upsert: true }
           );
-        var recordDB = dbClient
+        var recordDB = await dbClient
           .db("Scatt")
           .collection("records")
           .findOne({ name: "Highest Counting" });
