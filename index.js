@@ -519,6 +519,20 @@ const warnings = new SlashCommandBuilder()
 
 client.on("ready", async function () {
   console.log("Logged in as " + client.user.tag + "!");
+  let feature = new SlashCommandBuilder()
+  .setName("feature")
+  .setDescription("Get info on any feature!")
+  var response = await fetch('https://raw.githubusercontent.com/stforscratch/scratchtools/main/features/features.json')
+  var data = await response.json()
+  let featureChoices = []
+  data.forEach(function(el) {
+    featureChoices.push({ name: el.title, value: el.file })
+  })
+  feature.addStringOption(option =>
+		option.setName('search')
+			.setDescription('What feature to search for.')
+			.setRequired(true)
+			.addChoices(featureChoices));
   await rest.put(Routes.applicationCommands(client.user.id), {
     body: [
       xp,
@@ -530,6 +544,7 @@ client.on("ready", async function () {
       say,
       isbadword,
       config,
+      feature,
     ],
   });
   //resetCookieCampers()
@@ -1440,6 +1455,9 @@ client.on("interactionCreate", async function (interaction) {
   }
   if (interaction.type === 2) {
     const { commandName } = interaction;
+    if (commandName === "feature") {
+
+    }
     if (commandName === "config") {
       if (
         interaction.channel.id === scatt.channels.staff_cmd ||
