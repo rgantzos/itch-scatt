@@ -336,6 +336,37 @@ async function getDaily() {
     ">\n- <@"
   )}>`;
   scatt.log({ content: dailyMembers });
+  let talkingTodayDatabase = await dbClient
+    .db("Scatt")
+    .collection("records")
+    .findOne({ name: "Most People Talking in One Day" });
+  if (talkingTodayDatabase) {
+    if (spoken.length > talkingTodayDatabase.value) {
+      await dbClient
+        .db("Scatt")
+        .collection("records")
+        .updateOne(
+          { name: "Most People Talking in One Day" },
+          { $set: { value: spoken.length, holder: Date.now() } },
+          { upsert: true }
+        );
+      var serverChanges = await client.channels.fetch(
+        scatt.channels.server_changes
+      );
+      serverChanges.send({
+        content: `<:st_emoji_party:1008191843281936414> Look at that! We just beat the server's record for most people talking! Thanks to the ${spoken.length.toString()} people who were talking!`,
+      });
+    }
+  } else {
+    await dbClient
+      .db("Scatt")
+      .collection("records")
+      .insertOne({
+        name: "Most People Talking in One Day",
+        holder: Date.now(),
+        value: spoken.length,
+      });
+  }
   members.forEach(async function (el) {
     await dbClient
       .db("Scatt")
