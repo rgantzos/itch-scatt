@@ -532,7 +532,7 @@ client.on("ready", async function () {
 		option.setName('search')
 			.setDescription('What feature to search for.')
 			.setRequired(true)
-			.addChoices(featureChoices));
+			.addChoices(...featureChoices));
   await rest.put(Routes.applicationCommands(client.user.id), {
     body: [
       xp,
