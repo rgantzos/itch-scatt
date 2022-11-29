@@ -767,7 +767,8 @@ client.on("messageCreate", async function (message) {
     if (
       message.content &&
       message.content !== "" &&
-      message.content.match(/^[0-9]+$/)
+      !isNaN(message.content) &&
+      !isNaN(parseFloat(message.content))
     ) {
       var tried = Number(message.content);
       var oldNumber = await dbClient
