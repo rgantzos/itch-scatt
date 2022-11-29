@@ -1269,7 +1269,7 @@ client.on("messageReactionAdd", async function (reaction, user) {
             .db("Scatt")
             .collection("records")
             .findOne({ name: "Cookieboard Speedrun" });
-          if (records) {
+          if (records && records.value > timeToBoard) {
             var channel = await client.channels.fetch(
               scatt.channels.server_changes
             );
