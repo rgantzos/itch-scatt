@@ -426,6 +426,17 @@ const say = new SlashCommandBuilder()
       .setRequired(true)
   );
 
+  const feature = new SlashCommandBuilder()
+  .setName("feature")
+  .setDescription("Show info on a feature.")
+  .setDMPermission(true)
+  .addStringOption((option) =>
+    option
+      .setName("search")
+      .setDescription("The feature to search for.")
+      .setRequired(true)
+  );
+
 const isbadword = new SlashCommandBuilder()
   .setName("is-bad-word")
   .setDescription("Check if something includes a bad word.")
@@ -519,6 +530,20 @@ const warnings = new SlashCommandBuilder()
 
 client.on("ready", async function () {
   console.log("Logged in as " + client.user.tag + "!");
+  let feature = new SlashCommandBuilder()
+  .setName("feature")
+  .setDescription("Get info on any feature!")
+  var response = await fetch('https://raw.githubusercontent.com/stforscratch/scratchtools/main/features/features.json')
+  var data = await response.json()
+  let featureChoices = []
+  data.forEach(function(el) {
+    featureChoices.push({ name: el.title, value: el.file })
+  })
+  feature.addStringOption(option =>
+		option.setName('search')
+			.setDescription('What feature to search for.')
+			.setRequired(true)
+			.addChoices(...featureChoices));
   await rest.put(Routes.applicationCommands(client.user.id), {
     body: [
       xp,
@@ -530,6 +555,7 @@ client.on("ready", async function () {
       say,
       isbadword,
       config,
+      feature,
     ],
   });
   //resetCookieCampers()
@@ -1440,6 +1466,92 @@ client.on("interactionCreate", async function (interaction) {
   }
   if (interaction.type === 2) {
     const { commandName } = interaction;
+    if (commandName === 'feature') {
+      function similarity(s1, s2) {
+  var longer = s1;
+  var shorter = s2;
+  if (s1.length < s2.length) {
+    longer = s2;
+    shorter = s1;
+  }
+  var longerLength = longer.length;
+  if (longerLength == 0) {
+    return 1.0;
+  }
+  return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+}
+function editDistance(s1, s2) {
+  s1 = s1.toLowerCase();
+  s2 = s2.toLowerCase();
+
+  var costs = new Array();
+  for (var i = 0; i <= s1.length; i++) {
+    var lastValue = i;
+    for (var j = 0; j <= s2.length; j++) {
+      if (i == 0)
+        costs[j] = j;
+      else {
+        if (j > 0) {
+          var newValue = costs[j - 1];
+          if (s1.charAt(i - 1) != s2.charAt(j - 1))
+            newValue = Math.min(Math.min(newValue, lastValue),
+              costs[j]) + 1;
+          costs[j - 1] = lastValue;
+          lastValue = newValue;
+        }
+      }
+    }
+    if (i > 0)
+      costs[s2.length] = lastValue;
+  }
+  return costs[s2.length];
+}
+if (interaction.options.getString("search") !== undefined) {
+search(interaction.options.getString("search"))
+} else {
+  search(null)
+}
+async function search(search) {
+var features = []
+var response = await fetch('https://raw.githubusercontent.com/STForScratch/ScratchTools/main/features/features.json')
+var data = await response.json()
+var similar = []
+data.forEach(function(el) {
+    features.push(el['title'])
+})
+  if (search !== null) {
+features.forEach(function(el) {
+    similar.push(similarity(search.toLowerCase(), el.toLowerCase()))
+})
+  }
+  if (search !== null) {
+    var searchResult = features[similar.indexOf(Math.max(...similar))]
+  } else {
+    var searchResult = features[Math.floor(Math.random()*features.length)]
+  }
+  Object.keys(data).forEach(async function(el) {
+    if (data[el]['title'].toLowerCase() === searchResult.toLowerCase()) {
+      var f = data[el]
+      var credits = f.credits
+      console.log(credits)
+        credits.forEach(function(el, i) {
+          credits[i] = `[${credits[i]}](${f.urls[i]})`
+        })
+      var featureEmbed = new EmbedBuilder()
+      .setTitle(f.title)
+      .setDescription(f.description)
+        .setImage(`https://scratchtools-images.rgantzos.repl.co/images/${f.file}.png`)
+        .addFields({name:'Credits', value:f.credits.join(', ')})
+      if (search === null) {
+        featureEmbed.setFooter({ text:`Random Feature` })
+      } else {
+        featureEmbed.setFooter({ text:`Search Query: ${interaction.options.getString("search")} (${(Math.max(...similar)*100).toString().split('.')[0]}% match)` })
+      }
+      await interaction.reply({ embeds:[featureEmbed] })
+    }
+  })
+}
+    }
     if (commandName === "feature") {
 
     }
