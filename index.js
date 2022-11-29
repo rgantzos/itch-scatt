@@ -767,18 +767,24 @@ client.on("messageCreate", async function (message) {
         await dbClient.db("Scatt").collection("counting").insertOne({
           user: client.user.id,
           number: 0,
+          contributors: [],
         });
         oldNumber = [{ number: 0 }];
       }
       if (oldNumber[0].number + 1 === tried) {
         if (oldNumber[0].user !== message.author.id) {
           message.react(scatt.emojis.successful);
+          if (oldNumber[0].contributors && !oldNumber[0].contributors.includes(message.author.id)) {
+            oldNumber[0].contributors.push(message.author.id)
+          } else {
+            oldNumber[0].contributors = [message.author.id]
+          }
           dbClient
             .db("Scatt")
             .collection("counting")
             .updateOne(
               { number: oldNumber[0].number },
-              { $set: { number: tried, user: message.author.id } },
+              { $set: { number: tried, user: message.author.id, contributors: oldNumber[0].contributors } },
               { upsert: true }
             );
         } else {
@@ -792,7 +798,7 @@ client.on("messageCreate", async function (message) {
             .collection("counting")
             .updateOne(
               { number: oldNumber[0].number },
-              { $set: { number: 0, user: client.user.id } },
+              { $set: { number: 0, user: client.user.id, contributors: [] } },
               { upsert: true }
             );
           var recordDB = await dbClient
@@ -812,9 +818,10 @@ client.on("messageCreate", async function (message) {
                   { $set: { value: oldNumber[0].number } },
                   { upsert: true }
                 );
-              channel.send({
-                content: `<:st_emoji_party:1008191843281936414> Wow, we just broke the record for highest number in <#${scatt.channels.counting}>! We made it all the way to ${oldNumber[0].number}!!`,
-              });
+                channel.send({
+                  content: `<:st_emoji_party:1008191843281936414> Wow, we just broke the record for highest number in <#${scatt.channels.counting}>! We made it all the way to ${oldNumber[0].number}!!\n\nWe could't have done it without: <@${oldNumber[0].contributors.join('>\n<@')}>`,
+                  allowedMentions:{users:[]}
+                });
             }
           } else {
             await dbClient.db("Scatt").collection("records").insertOne({
@@ -834,8 +841,8 @@ client.on("messageCreate", async function (message) {
           .collection("counting")
           .updateOne(
             { number: oldNumber[0].number },
-            { $set: { number: 0, user: client.user.id } },
-            { upsert: true }
+            { $set: { number: 0, user: client.user.id, contributors: [] } },
+            { upsert: true },
           );
         var recordDB = await dbClient
           .db("Scatt")
@@ -855,7 +862,8 @@ client.on("messageCreate", async function (message) {
                 { upsert: true }
               );
             channel.send({
-              content: `<:st_emoji_party:1008191843281936414> Wow, we just broke the record for highest number in <#${scatt.channels.counting}>! We made it all the way to ${oldNumber[0].number}!!`,
+              content: `<:st_emoji_party:1008191843281936414> Wow, we just broke the record for highest number in <#${scatt.channels.counting}>! We made it all the way to ${oldNumber[0].number}!!\n\nWe could't have done it without: <@${oldNumber[0].contributors.join('>\n<@')}>`,
+              allowedMentions:{users:[]}
             });
           }
         } else {
