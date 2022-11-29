@@ -735,7 +735,7 @@ client.on("messageDelete", async function (message) {
         scatt.log({
           content: `🗑️ <@${message.author.id}> had their message deleted in <#${
             message.channel.id
-          }>:\n\n${message.content.toString()}`,
+          }>:\n${message.content.toString()}`,
           files: message.attachments.map((attachment) => attachment),
         });
       } else {
