@@ -1289,7 +1289,6 @@ client.on("messageReactionAdd", async function (reaction, user) {
             content: `<@${
               reaction.message.author.id
             }> | 🍪x${reaction.count.toString()}`,
-            allowedMentions: { users: [] },
             components: [row],
             files: reaction.message.attachments.map((attachment) => attachment),
           });
