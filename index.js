@@ -18,15 +18,6 @@ const {
   EmbedBuilder,
   Partials,
 } = require("discord.js");
-const {
-  joinVoiceChannel,
-  VoiceConnectionStatus,
-  entersState,
-  createAudioPlayer,
-  NoSubscriberBehavior,
-  createAudioResource,
-  AudioPlayerStatus,
-} = require("@discordjs/voice");
 const { exec } = require("child_process");
 const { REST } = require("@discordjs/rest");
 const rest = new REST({ version: "10" }).setToken(process.env.token);
@@ -386,10 +377,6 @@ const viewWarns = new SlashCommandBuilder()
   .setName("view-warns")
   .setDescription("View your warnings.");
 
-const music = new SlashCommandBuilder()
-  .setName("music")
-  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-  .setDescription("Play music in voice channel.");
 
 const config = new SlashCommandBuilder()
   .setName("config")
