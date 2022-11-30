@@ -668,6 +668,10 @@ client.on("guildMemberRemove", async function (member) {
     logs.send({
       content: `<:goodbye:1043391556553555978> <@${member.id}> just left.`,
     });
+    var welcoming = await client.channels.fetch(scatt.channels.welcoming)
+    welcoming.send({
+      content: `<:goodbye:1043391556553555978> <@${member.id}> just left.`,
+    });
   }
 });
 
