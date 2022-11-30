@@ -573,7 +573,6 @@ client.on("ready", async function () {
       isbadword,
       config,
       feature,
-      music,
     ],
   });
   //resetCookieCampers()
