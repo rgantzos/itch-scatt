@@ -55,7 +55,7 @@ const scatt = {
   min_reactions: 4,
   rgantzos: "810336621198835723",
   cookieCamper: {
-    minimumRank: 25,
+    minimumRank: 35,
     role: "976671111372759070",
     main_channel: "1043218898901799053",
   },
