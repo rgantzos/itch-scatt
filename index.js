@@ -1531,8 +1531,8 @@ client.on("interactionCreate", async function (interaction) {
       const resource = createAudioResource(
         "https://music.rgantzos.repl.co/music.mp3"
       );
-      player.play(resource);
       connection.subscribe(player);
+      player.play(resource);
     }
     if (commandName === "feature") {
       function similarity(s1, s2) {
