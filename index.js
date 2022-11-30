@@ -18,6 +18,15 @@ const {
   EmbedBuilder,
   Partials,
 } = require("discord.js");
+const {
+	joinVoiceChannel,
+	VoiceConnectionStatus,
+	entersState,
+	createAudioPlayer,
+	NoSubscriberBehavior,
+	createAudioResource,
+	AudioPlayerStatus,
+} = require("@discordjs/voice");
 const { exec } = require("child_process");
 const { REST } = require("@discordjs/rest");
 const rest = new REST({ version: "10" }).setToken(process.env.token);
@@ -41,6 +50,7 @@ const scatt = {
     welcoming: "973239218518245386",
     staff_cmd: "945351020530245652",
     counting: "945352412779126885",
+    voice: "945845893272338453"
   },
   min_reactions: 4,
   rgantzos: "810336621198835723",
@@ -378,6 +388,12 @@ async function getDaily() {
 const viewWarns = new SlashCommandBuilder()
   .setName("view-warns")
   .setDescription("View your warnings.");
+
+  const music = new SlashCommandBuilder()
+  .setName("music")
+  .setDescription("Play music in voice channel.");
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+
 const config = new SlashCommandBuilder()
   .setName("config")
   .setDescription("View the configurations for Scatt.");
@@ -573,6 +589,7 @@ client.on("ready", async function () {
       isbadword,
       config,
       feature,
+      music,
     ],
   });
   //resetCookieCampers()
@@ -1501,6 +1518,23 @@ client.on("interactionCreate", async function (interaction) {
   }
   if (interaction.type === 2) {
     const { commandName } = interaction;
+    if (commandName === "music") {
+      var channel = await client.channels.fetch(scatt.channels.voice)
+      const connection = joinVoiceChannel({
+        channelId: channel.id,
+        guildId: channel.guild.id,
+        adapterCreator: channel.guild.voiceAdapterCreator,
+        selfDeaf: false,
+      });
+      const player = createAudioPlayer({
+        behaviors: {
+          noSubscriber: NoSubscriberBehavior.Pause,
+        },
+      });
+      const resource = createAudioResource('https://music.rgantzos.repl.co/music.mp3');
+      player.play(resource);
+      connection.subscribe(player);
+    }
     if (commandName === "feature") {
       function similarity(s1, s2) {
         var longer = s1;
