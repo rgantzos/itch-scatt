@@ -19,13 +19,13 @@ const {
   Partials,
 } = require("discord.js");
 const {
-	joinVoiceChannel,
-	VoiceConnectionStatus,
-	entersState,
-	createAudioPlayer,
-	NoSubscriberBehavior,
-	createAudioResource,
-	AudioPlayerStatus,
+  joinVoiceChannel,
+  VoiceConnectionStatus,
+  entersState,
+  createAudioPlayer,
+  NoSubscriberBehavior,
+  createAudioResource,
+  AudioPlayerStatus,
 } = require("@discordjs/voice");
 const { exec } = require("child_process");
 const { REST } = require("@discordjs/rest");
@@ -50,7 +50,7 @@ const scatt = {
     welcoming: "973239218518245386",
     staff_cmd: "945351020530245652",
     counting: "945352412779126885",
-    voice: "945845893272338453"
+    voice: "945845893272338453",
   },
   min_reactions: 4,
   rgantzos: "810336621198835723",
@@ -368,14 +368,11 @@ async function getDaily() {
       });
     }
   } else {
-    await dbClient
-      .db("Scatt")
-      .collection("records")
-      .insertOne({
-        name: "Most People Talking in One Day",
-        holder: Date.now(),
-        value: spoken.length,
-      });
+    await dbClient.db("Scatt").collection("records").insertOne({
+      name: "Most People Talking in One Day",
+      holder: Date.now(),
+      value: spoken.length,
+    });
   }
   members.forEach(async function (el) {
     await dbClient
@@ -389,10 +386,10 @@ const viewWarns = new SlashCommandBuilder()
   .setName("view-warns")
   .setDescription("View your warnings.");
 
-  const music = new SlashCommandBuilder()
+const music = new SlashCommandBuilder()
   .setName("music")
-  .setDescription("Play music in voice channel.");
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+  .setDescription("Play music in voice channel.");
 
 const config = new SlashCommandBuilder()
   .setName("config")
@@ -1519,7 +1516,7 @@ client.on("interactionCreate", async function (interaction) {
   if (interaction.type === 2) {
     const { commandName } = interaction;
     if (commandName === "music") {
-      var channel = await client.channels.fetch(scatt.channels.voice)
+      var channel = await client.channels.fetch(scatt.channels.voice);
       const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guild.id,
@@ -1531,7 +1528,9 @@ client.on("interactionCreate", async function (interaction) {
           noSubscriber: NoSubscriberBehavior.Pause,
         },
       });
-      const resource = createAudioResource('https://music.rgantzos.repl.co/music.mp3');
+      const resource = createAudioResource(
+        "https://music.rgantzos.repl.co/music.mp3"
+      );
       player.play(resource);
       connection.subscribe(player);
     }
