@@ -1046,7 +1046,7 @@ client.on("messageCreate", async function (message) {
               var embed = new EmbedBuilder()
                 .setTitle("🍪 Welcome to the Cookie Campers!")
                 .setDescription(
-                  "You're at this *exclusive* camp now because you're in the top 25 on the leaderboard! Congrats!"
+                  "You're at this *exclusive* camp now because you're in the top "+scatt.cookieCamper.minimumRank.toString()+" on the leaderboard! Congrats!"
                 )
                 .setAuthor({
                   name: message.author.username,
