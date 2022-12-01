@@ -61,7 +61,7 @@ const scatt = {
   },
   top_member: {
     role: "1043681441327874078",
-    count: 5,
+    count: 7,
   },
   server: "945340853189247016",
   ping_roles: {
