@@ -17,6 +17,9 @@ const {
   SlashCommandBuilder,
   EmbedBuilder,
   Partials,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
 } = require("discord.js");
 const {
   joinVoiceChannel,
@@ -386,6 +389,10 @@ const viewWarns = new SlashCommandBuilder()
   .setName("view-warns")
   .setDescription("View your warnings.");
 
+  const apply = new SlashCommandBuilder()
+  .setName("apply")
+  .setDescription("Apply for the moderator role.");
+
 const music = new SlashCommandBuilder()
   .setName("music")
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
@@ -586,6 +593,7 @@ client.on("ready", async function () {
       isbadword,
       config,
       feature,
+      apply,
     ],
   });
   //resetCookieCampers()
@@ -1516,8 +1524,42 @@ client.on("interactionCreate", async function (interaction) {
       });
     }
   }
+  if (interaction.isModalSubmit()) {
+  if (interaction.customId === "mod-application") {
+await scatt.log({
+  content: `<@${interaction.user.id}> just submitted a moderator application!\n**Why they want to be moderator:**\n${interaction.fields.getTextInputValue('why')}\n**What experience they have:**\n${interaction.fields.getTextInputValue('experience')}\n**Their timezone:**${interaction.fields.getTextInputValue('timezone')}`
+})
+interaction.reply({ content:"Thanks for applying! We just sent your application to the staff team!", ephemeral: true })
+  }
+}
   if (interaction.type === 2) {
     const { commandName } = interaction;
+    if (commandName === "apply") {
+      const applicationModal = new ModalBuilder()
+			.setCustomId('mod-application')
+			.setTitle('Moderator Application')
+      .addComponents(
+        new TextInputBuilder()
+        .setCustomId('why')
+        .setLabel("Why do you wish to be a moderator?")
+          .setPlaceholder("Because Gobo told me to.")
+          .setStyle(TextInputStyle.Paragraph)
+          .setRequired(true),
+        new TextInputComponent()
+        .setCustomId('experience')
+        .setLabel("Where have you moderated?")
+          .setPlaceholder("I helped Scratch Cat run his special Scratch friends server.")
+          .setStyle(TextInputStyle.Paragraph)
+          .setRequired(true),
+          new TextInputComponent()
+        .setCustomId('timezone')
+        .setLabel("What time zone do you live in?")
+          .setPlaceholder("You can ask Google if you're unsure.")
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true),
+      )
+      await interaction.showModal(applicationModal);
+    }
     if (commandName === "music") {
       var channel = await client.channels.fetch(scatt.channels.voice);
       const connection = joinVoiceChannel({
