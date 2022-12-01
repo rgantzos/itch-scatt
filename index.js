@@ -1545,13 +1545,13 @@ interaction.reply({ content:"Thanks for applying! We just sent your application 
           .setPlaceholder("Because Gobo told me to.")
           .setStyle(TextInputStyle.Paragraph)
           .setRequired(true),
-        new TextInputComponent()
+        new TextInputBuilder()
         .setCustomId('experience')
         .setLabel("Where have you moderated?")
           .setPlaceholder("I helped Scratch Cat run his special Scratch friends server.")
           .setStyle(TextInputStyle.Paragraph)
           .setRequired(true),
-          new TextInputComponent()
+          new TextInputBuilder()
         .setCustomId('timezone')
         .setLabel("What time zone do you live in?")
           .setPlaceholder("You can ask Google if you're unsure.")
