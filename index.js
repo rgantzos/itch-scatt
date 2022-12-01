@@ -1913,6 +1913,9 @@ client.on("interactionCreate", async function (interaction) {
               .setFooter({ text: `This is warning #1 for you.` });
             await user.send({ embeds: [warningEmbed] });
           }
+          scatt.log(
+            `<@${interaction.user.id}> just warned <@${user.id}> with reason: ${interaction.options.getString("reason")}`
+          )
         }
         if (interaction.options.getSubcommand() === "view") {
           var user = interaction.options.getUser("member");
@@ -1991,6 +1994,9 @@ client.on("interactionCreate", async function (interaction) {
                 text: `You now have ${userWarnings.warnings.length.toString()} warnings.`,
               });
             await user.send({ embeds: [warningEmbed] });
+            scatt.log(
+              `<@${interaction.user.id}> just removed a warning given by <@${warning.moderator}> to <@${user.id}> with reason: ${warning.reason}`
+            )
           } else {
             interaction.reply({
               content: "This warning does not exist.",
