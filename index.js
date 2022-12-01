@@ -2109,6 +2109,26 @@ client.on("interactionCreate", async function (interaction) {
   }
 });
 
+client.on("messageEdit", async function(before, after) {
+  try {
+    if (message.author && !message.author.bot) {
+      if (message.content) {
+        scatt.log({
+          content: `<@${before.author.id}> just edited their message ( ${before.url} ) from:\n${before.content}\nto:\n${after.content}`,
+          files: before.attachments.map((attachment) => attachment),
+        });
+      } else {
+        scatt.log({
+          content: `<@${before.author.id}> just edited their message ( ${before.url} )`,
+          files: before.attachments.map((attachment) => attachment),
+        });
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+})
+
 client.on("guildMemberUpdate", async (before, after) => {
   if (before.nickname !== after.nickname) {
     if (after.nickname) {
