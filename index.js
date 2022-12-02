@@ -2153,10 +2153,10 @@ interaction.reply({ content:"Thanks for applying! We just sent your application 
 
 client.on("messageEdit", async function(before, after) {
   try {
-    if (message.author && !message.author.bot) {
-      if (message.content) {
+    if (before.author && !before.author.bot) {
+      if (before.content) {
         scatt.log({
-          content: `<@${before.author.id}> just edited their message ( ${before.url} ) from:\n${before.content}\nto:\n${after.content}`,
+          content: `<@${before.author.id}> just edited their message ( ${before.url} ) from:\n${before.content}\nto:\n${after.content || ""}`,
           files: before.attachments.map((attachment) => attachment),
         });
       } else {
