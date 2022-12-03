@@ -1538,26 +1538,25 @@ interaction.reply({ content:"Thanks for applying! We just sent your application 
       const applicationModal = new ModalBuilder()
 			.setCustomId('mod-application')
 			.setTitle('Moderator Application')
-      .addComponents(
-        new TextInputBuilder()
-        .setCustomId('why')
-        .setLabel("Why do you wish to be a moderator?")
-          .setPlaceholder("Because Gobo told me to.")
-          .setStyle(TextInputStyle.Paragraph)
-          .setRequired(true),
-        new TextInputBuilder()
-        .setCustomId('experience')
-        .setLabel("Where have you moderated?")
-          .setPlaceholder("I helped Scratch Cat run his special Scratch friends server.")
-          .setStyle(TextInputStyle.Paragraph)
-          .setRequired(true),
-          new TextInputBuilder()
-        .setCustomId('timezone')
-        .setLabel("What time zone do you live in?")
-          .setPlaceholder("You can ask Google if you're unsure.")
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true),
-      )
+      const firstQuestion = new ActionRowBuilder().addComponents(new TextInputBuilder()
+      .setCustomId('why')
+      .setLabel("Why do you wish to be a moderator?")
+        .setPlaceholder("Because Gobo told me to.")
+        .setStyle(TextInputStyle.Paragraph)
+        .setRequired(true));
+      const secondQuestion = new ActionRowBuilder().addComponents(new TextInputBuilder()
+      .setCustomId('experience')
+      .setLabel("Where have you moderated?")
+        .setPlaceholder("I helped Scratch Cat run his special Scratch friends server.")
+        .setStyle(TextInputStyle.Paragraph)
+        .setRequired(true));
+      const thirdQuestion = new ActionRowBuilder().addComponents(new TextInputBuilder()
+      .setCustomId('timezone')
+      .setLabel("What time zone do you live in?")
+        .setPlaceholder("You can ask Google if you're unsure.")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true));
+        applicationModal.addComponents(firstQuestion, secondQuestion, thirdQuestion)
       await interaction.showModal(applicationModal);
     }
     if (commandName === "music") {
