@@ -972,7 +972,7 @@ client.on("messageCreate", async function (message) {
     }
   }
   scatt.autoReacts.forEach(function(el) {
-    if ((el.only && message.content.toLowerCase() === el.text.toLowerCase()) || (!only && message.content.toLowerCase().includes(el.text.toLowerCase()))) {
+    if ((el.only && message.content.toLowerCase() === el.text.toLowerCase()) || (!el.only && message.content.toLowerCase().includes(el.text.toLowerCase()))) {
       message.react(el.reaction)
     }
   })
