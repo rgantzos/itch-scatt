@@ -38,10 +38,15 @@ const scatt = {
     successful: "<:successful:1043300109921829054>",
     unsuccessful: "<:unsuccessful:1043300105450696765>",
   },
-  autoReacts: {
-    "<@948687053896433714>": "❤️",
-    scratchtools: "<:scratchtools:988978116187799583>",
-  },
+  autoReacts: [
+    { text: "<@948687053896433714>", reaction: "❤️", only: true },
+    { text: "scratchtools", reaction: "<:scratchtools:988978116187799583>", only: true },
+    { text: "griff", reaction: "<:griff:1048674848077004831>" },
+    { text: "jeff", reaction: "<:jeff:1048674849314324520>" },
+    { text: "misty", reaction: "<:misty:1048674846852251658>" },
+    { text: "rgantzos", reaction: "<:rgantzos:1048674850501300344>" },
+    { text: "daniel", reaction: "<:daniel:1048675920027852921>" }
+  ],
   channels: {
     server_changes: "1043042679111561257",
     modmail: "954823644415135826",
@@ -966,6 +971,11 @@ client.on("messageCreate", async function (message) {
       }
     }
   }
+  autoReacts.forEach(function(el) {
+    if ((el.only && message.content.toLowerCase() === el.text.toLowerCase()) || (!only && message.content.toLowerCase().includes(el.text.toLowerCase()))) {
+      message.react(el.reaction)
+    }
+  })
   if (!message.author.bot && message.channel.type !== 1) {
     function isNumeric(str) {
       if (typeof str != "string") return false; // we only process strings!
