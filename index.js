@@ -70,7 +70,7 @@ const scatt = {
   ping_roles: {
     scratch: "978771942981132368",
     developer: "978771991551180890",
-    games: "978772038154088472",
+    events: "978772038154088472",
     updates: "1018005551675879454",
     random: "1043354855617597461",
   },
@@ -412,9 +412,9 @@ const roles = new SlashCommandBuilder()
   )
   .addBooleanOption((option) =>
     option
-      .setName("games")
+      .setName("events")
       .setDescription(
-        "These pings include games going on in the server that you can play."
+        "These pings include events going on in the server that you can play."
       )
   )
   .addBooleanOption((option) =>
