@@ -1527,7 +1527,7 @@ client.on("interactionCreate", async function (interaction) {
   if (interaction.isModalSubmit()) {
   if (interaction.customId === "mod-application") {
 await scatt.log({
-  content: `<@${interaction.user.id}> just submitted a moderator application!\n**Why they want to be moderator:**\n${interaction.fields.getTextInputValue('why')}\n**What experience they have:**\n${interaction.fields.getTextInputValue('experience')}\n**Their timezone:**${interaction.fields.getTextInputValue('timezone')}`
+  content: `<@${interaction.user.id}> just submitted a moderator application!\n**Why they want to be moderator:**\n${interaction.fields.getTextInputValue('why')}\n**What experience they have:**\n${interaction.fields.getTextInputValue('experience')}\n**Their timezone:** ${interaction.fields.getTextInputValue('timezone')}`
 })
 interaction.reply({ content:"Thanks for applying! We just sent your application to the staff team!", ephemeral: true })
   }
