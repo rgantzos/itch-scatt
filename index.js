@@ -861,7 +861,7 @@ client.on("messageDelete", async function (message) {
 });
 
 client.on("messageCreate", async function (message) {
-  if (message.author === scatt.rgantzos && message.content === "!giveaway") {
+  if (message.author.id === scatt.rgantzos && message.content === "!giveaway") {
     var giveawayEmbed = new EmbedBuilder()
     .setTitle("ScratchTools Nitro Giveaway")
     .setDescription("<@529773171574833152> has been kind enough to donate Nitro for a giveaway! Click the button below to join the giveaway, where a person will be selected at random!")
