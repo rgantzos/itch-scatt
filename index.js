@@ -728,6 +728,40 @@ async function getLeaderboard() {
   return topAll.reverse();
 }
 
+async function getWarningsEmbed(userId) {
+  var user = await client.users.fetch(userId);
+  var userWarnings = await dbClient
+    .db("Scatt")
+    .collection("warnings")
+    .findOne({ id: user.id });
+  if (
+    userWarnings &&
+    userWarnings.warnings &&
+    userWarnings.warnings.length > 0
+  ) {
+    var buildEmbed = new EmbedBuilder()
+      .setTitle("Warnings")
+      .setDescription(`<@${user.id}>'s warnings in the server.`)
+      .setAuthor({ name: user.username, iconURL: user.avatarURL() })
+      .setThumbnail(user.avatarURL());
+    userWarnings.warnings.forEach(function (el, i) {
+      buildEmbed.addFields({
+        name: "Warning #" + (i + 1).toString(),
+        value: el.reason + ` by <@${el.moderator}>`,
+        inline: false,
+      });
+    });
+    interaction.reply({ embeds: [buildEmbed] });
+  } else {
+    var buildEmbed = new EmbedBuilder()
+      .setTitle("Warnings")
+      .setDescription(`<@${user.id}>'s has no warnings in the server.`)
+      .setAuthor({ name: user.username, iconURL: user.avatarURL() })
+      .setThumbnail(user.avatarURL());
+  }
+  return buildEmbed;
+}
+
 async function getWeeklyLeaderboard() {
   var topXp = [];
   var topUsers = [];
@@ -1403,6 +1437,7 @@ client.on("interactionCreate", async function (interaction) {
         autoArchiveDuration: 1440,
         reason: "Needed a separate thread for modmail.",
       });
+      await thread.send({ embeds:[await getWarningsEmbed()] })
       var message = await interaction.message.channel.messages.fetch(
         interaction.message.reference.messageId
       );
@@ -1823,6 +1858,7 @@ interaction.reply({ content:"Thanks for applying! We just sent your application 
             autoArchiveDuration: 1440,
             reason: "Needed a separate thread for modmail.",
           });
+          await thread.send({ embeds:[await getWarningsEmbed()] })
           await user.send({ embeds: [openEmbed] });
         }
       }
