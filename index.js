@@ -861,6 +861,23 @@ client.on("messageDelete", async function (message) {
 });
 
 client.on("messageCreate", async function (message) {
+  if (message.author === scatt.rgantzos && message.content === "!giveaway") {
+    var giveawayEmbed = new EmbedBuilder()
+    .setTitle("ScratchTools Nitro Giveaway")
+    .setDescription("<@529773171574833152> has been kind enough to donate Nitro for a giveaway! Click the button below to join the giveaway, where a person will be selected at random!")
+    .setColor("Blurple")
+    .setFooter({ text: "This giveaway ends at 10PM Pacific Standard Time on Dec 4th, 2022." })
+    var giveawayRow = new ActionRowBuilder()
+    .addComponents(
+      new ButtonBuilder()
+      .setCustomId("giveaway-join-dec4-2022")
+      .setStyle("Success")
+      .setLabel("Join Giveaway")
+      .setEmoji("🥳")
+    )
+    await message.delete()
+    message.channel.send({ embeds:[giveawayEmbed], components:[giveawayRow], content: "<@&1043354855617597461> <@&978772038154088472>" })
+  }
   if (message.channel.id === scatt.channels.counting) {
     if (
       message.content &&
@@ -1437,6 +1454,15 @@ client.on("messageReactionAdd", async function (reaction, user) {
 });
 
 client.on("interactionCreate", async function (interaction) {
+  if (interaction.customId === "giveaway-join-dec4-2022") {
+    var already = await dbClient.db("Scatt").collection("giveaway").findOne({ id: interaction.user.id })
+    if (already) {
+      interaction.reply({ content: "You already joined the giveaway!", ephemeral:true })
+    } else {
+      await dbClient.db("Scatt").collection("giveaway").insertOne({ id: interaction.user.id, time: Date.now() })
+      interaction.reply({ content: "Joined the giveaway!", ephemeral:true })
+    }
+  }
   if (interaction.customId === "startmodmail") {
     var modmailChannel = await client.channels.fetch(scatt.channels.modmail);
     var existingModmail = await modmailChannel.threads.cache.find(
