@@ -755,7 +755,6 @@ async function getWarningsEmbed(user) {
         inline: false,
       });
     });
-    interaction.reply({ embeds: [buildEmbed] });
   } else {
     var buildEmbed = new EmbedBuilder()
       .setTitle("Warnings")
