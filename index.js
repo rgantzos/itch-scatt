@@ -40,12 +40,16 @@ const scatt = {
   },
   autoReacts: [
     { text: "<@948687053896433714>", reaction: "❤️", only: true },
-    { text: "scratchtools", reaction: "<:scratchtools:988978116187799583>", only: true },
+    {
+      text: "scratchtools",
+      reaction: "<:scratchtools:988978116187799583>",
+      only: true,
+    },
     { text: "griff", reaction: "<:griff:1048674848077004831>" },
     { text: "jeff", reaction: "<:jeff:1048674849314324520>" },
     { text: "misty", reaction: "<:misty:1048674846852251658>" },
     { text: "rgantzos", reaction: "<:rgantzos:1048674850501300344>" },
-    { text: "daniel", reaction: "<:daniel:1048675920027852921>" }
+    { text: "daniel", reaction: "<:daniel:1048675920027852921>" },
   ],
   channels: {
     server_changes: "1043042679111561257",
@@ -97,6 +101,7 @@ const scatt = {
     "screwing",
   ],
 };
+
 const dbClient = new MongoClient(process.env.database, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -394,7 +399,7 @@ const viewWarns = new SlashCommandBuilder()
   .setName("view-warns")
   .setDescription("View your warnings.");
 
-  const apply = new SlashCommandBuilder()
+const apply = new SlashCommandBuilder()
   .setName("apply")
   .setDescription("Apply for the moderator role.");
 
@@ -681,7 +686,7 @@ client.on("guildMemberRemove", async function (member) {
     logs.send({
       content: `<:goodbye:1043391556553555978> <@${member.id}> just left.`,
     });
-    var welcoming = await client.channels.fetch(scatt.channels.welcoming)
+    var welcoming = await client.channels.fetch(scatt.channels.welcoming);
     welcoming.send({
       content: `<:goodbye:1043391556553555978> <@${member.id}> just left.`,
     });
@@ -1005,11 +1010,15 @@ client.on("messageCreate", async function (message) {
       }
     }
   }
-  scatt.autoReacts.forEach(function(el) {
-    if ((el.only && message.content.toLowerCase() === el.text.toLowerCase()) || (!el.only && message.content.toLowerCase().includes(el.text.toLowerCase()))) {
-      message.react(el.reaction)
+  scatt.autoReacts.forEach(function (el) {
+    if (
+      (el.only && message.content.toLowerCase() === el.text.toLowerCase()) ||
+      (!el.only &&
+        message.content.toLowerCase().includes(el.text.toLowerCase()))
+    ) {
+      message.react(el.reaction);
     }
-  })
+  });
   if (!message.author.bot && message.channel.type !== 1) {
     function isNumeric(str) {
       if (typeof str != "string") return false; // we only process strings!
@@ -1048,15 +1057,26 @@ client.on("messageCreate", async function (message) {
       .collection("weekly")
       .findOne({ id: message.author.id });
     if (user && user.xp) {
-      var leaderboard = await getLeaderboard()
-      if (leaderboard[0].id !== message.author.id && (leaderboard[0].xp) <= (user.xp+28)) {
+      var leaderboard = await getLeaderboard();
+      if (
+        leaderboard[0].id !== message.author.id &&
+        leaderboard[0].xp <= user.xp + 28
+      ) {
         message.author.send({
-          content: `🥳 Congrats! You've just taken 1st on the ScratchTools leaderboard at ${(user.xp+28).toString()} XP, passing <@${leaderboard[0].id}>!`
-        })
-        var channel = await client.channels.fetch(scatt.channels.server_changes)
+          content: `🥳 Congrats! You've just taken 1st on the ScratchTools leaderboard at ${(
+            user.xp + 28
+          ).toString()} XP, passing <@${leaderboard[0].id}>!`,
+        });
+        var channel = await client.channels.fetch(
+          scatt.channels.server_changes
+        );
         channel.send({
-          content: `🏎️ <@${message.author.id}> just passed <@${leaderboard[0].id}> in XP, taking 1st place in the entire server at ${(user.xp+28).toString()} XP!`
-        })
+          content: `🏎️ <@${message.author.id}> just passed <@${
+            leaderboard[0].id
+          }> in XP, taking 1st place in the entire server at ${(
+            user.xp + 28
+          ).toString()} XP!`,
+        });
       }
       var oldLevel = Math.floor(user.xp / 1500);
       await dbClient
@@ -1108,7 +1128,9 @@ client.on("messageCreate", async function (message) {
               var embed = new EmbedBuilder()
                 .setTitle("🍪 Welcome to the Cookie Campers!")
                 .setDescription(
-                  "You're at this *exclusive* camp now because you're in the top "+scatt.cookieCamper.minimumRank.toString()+" on the leaderboard! Congrats!"
+                  "You're at this *exclusive* camp now because you're in the top " +
+                    scatt.cookieCamper.minimumRank.toString() +
+                    " on the leaderboard! Congrats!"
                 )
                 .setAuthor({
                   name: message.author.username,
@@ -1437,7 +1459,7 @@ client.on("interactionCreate", async function (interaction) {
         autoArchiveDuration: 1440,
         reason: "Needed a separate thread for modmail.",
       });
-      await thread.send({ embeds:[await getWarningsEmbed()] })
+      await thread.send({ embeds: [await getWarningsEmbed()] });
       var message = await interaction.message.channel.messages.fetch(
         interaction.message.reference.messageId
       );
@@ -1580,38 +1602,62 @@ client.on("interactionCreate", async function (interaction) {
     }
   }
   if (interaction.isModalSubmit()) {
-  if (interaction.customId === "mod-application") {
-await scatt.log({
-  content: `<@${interaction.user.id}> just submitted a moderator application!\n**Why they want to be moderator:**\n${interaction.fields.getTextInputValue('why')}\n**What experience they have:**\n${interaction.fields.getTextInputValue('experience')}\n**Their timezone:** ${interaction.fields.getTextInputValue('timezone')}`
-})
-interaction.reply({ content:"Thanks for applying! We just sent your application to the staff team!", ephemeral: true })
+    if (interaction.customId === "mod-application") {
+      await scatt.log({
+        content: `<@${
+          interaction.user.id
+        }> just submitted a moderator application!\n**Why they want to be moderator:**\n${interaction.fields.getTextInputValue(
+          "why"
+        )}\n**What experience they have:**\n${interaction.fields.getTextInputValue(
+          "experience"
+        )}\n**Their timezone:** ${interaction.fields.getTextInputValue(
+          "timezone"
+        )}`,
+      });
+      interaction.reply({
+        content:
+          "Thanks for applying! We just sent your application to the staff team!",
+        ephemeral: true,
+      });
+    }
   }
-}
   if (interaction.type === 2) {
     const { commandName } = interaction;
     if (commandName === "apply") {
       const applicationModal = new ModalBuilder()
-			.setCustomId('mod-application')
-			.setTitle('Moderator Application')
-      const firstQuestion = new ActionRowBuilder().addComponents(new TextInputBuilder()
-      .setCustomId('why')
-      .setLabel("Why do you wish to be a moderator?")
-        .setPlaceholder("Because Gobo told me to.")
-        .setStyle(TextInputStyle.Paragraph)
-        .setRequired(true));
-      const secondQuestion = new ActionRowBuilder().addComponents(new TextInputBuilder()
-      .setCustomId('experience')
-      .setLabel("Where have you moderated?")
-        .setPlaceholder("I helped Scratch Cat run his special Scratch friends server.")
-        .setStyle(TextInputStyle.Paragraph)
-        .setRequired(true));
-      const thirdQuestion = new ActionRowBuilder().addComponents(new TextInputBuilder()
-      .setCustomId('timezone')
-      .setLabel("What time zone do you live in?")
-        .setPlaceholder("You can ask Google if you're unsure.")
-        .setStyle(TextInputStyle.Short)
-        .setRequired(true));
-        applicationModal.addComponents(firstQuestion, secondQuestion, thirdQuestion)
+        .setCustomId("mod-application")
+        .setTitle("Moderator Application");
+      const firstQuestion = new ActionRowBuilder().addComponents(
+        new TextInputBuilder()
+          .setCustomId("why")
+          .setLabel("Why do you wish to be a moderator?")
+          .setPlaceholder("Because Gobo told me to.")
+          .setStyle(TextInputStyle.Paragraph)
+          .setRequired(true)
+      );
+      const secondQuestion = new ActionRowBuilder().addComponents(
+        new TextInputBuilder()
+          .setCustomId("experience")
+          .setLabel("Where have you moderated?")
+          .setPlaceholder(
+            "I helped Scratch Cat run his special Scratch friends server."
+          )
+          .setStyle(TextInputStyle.Paragraph)
+          .setRequired(true)
+      );
+      const thirdQuestion = new ActionRowBuilder().addComponents(
+        new TextInputBuilder()
+          .setCustomId("timezone")
+          .setLabel("What time zone do you live in?")
+          .setPlaceholder("You can ask Google if you're unsure.")
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true)
+      );
+      applicationModal.addComponents(
+        firstQuestion,
+        secondQuestion,
+        thirdQuestion
+      );
       await interaction.showModal(applicationModal);
     }
     if (commandName === "music") {
@@ -1858,7 +1904,7 @@ interaction.reply({ content:"Thanks for applying! We just sent your application 
             autoArchiveDuration: 1440,
             reason: "Needed a separate thread for modmail.",
           });
-          await thread.send({ embeds:[await getWarningsEmbed()] })
+          await thread.send({ embeds: [await getWarningsEmbed()] });
           await user.send({ embeds: [openEmbed] });
         }
       }
@@ -2011,8 +2057,10 @@ interaction.reply({ content:"Thanks for applying! We just sent your application 
             await user.send({ embeds: [warningEmbed] });
           }
           scatt.log(
-            `<@${interaction.user.id}> just warned <@${user.id}> with reason: ${interaction.options.getString("reason")}`
-          )
+            `<@${interaction.user.id}> just warned <@${
+              user.id
+            }> with reason: ${interaction.options.getString("reason")}`
+          );
         }
         if (interaction.options.getSubcommand() === "view") {
           var user = interaction.options.getUser("member");
@@ -2093,7 +2141,7 @@ interaction.reply({ content:"Thanks for applying! We just sent your application 
             await user.send({ embeds: [warningEmbed] });
             scatt.log(
               `<@${interaction.user.id}> just removed a warning given by <@${warning.moderator}> to <@${user.id}> with reason: ${warning.reason}`
-            )
+            );
           } else {
             interaction.reply({
               content: "This warning does not exist.",
@@ -2206,12 +2254,14 @@ interaction.reply({ content:"Thanks for applying! We just sent your application 
   }
 });
 
-client.on("messageEdit", async function(before, after) {
+client.on("messageEdit", async function (before, after) {
   try {
     if (before.author && !before.author.bot) {
       if (before.content) {
         scatt.log({
-          content: `<@${before.author.id}> just edited their message ( ${before.url} ) from:\n${before.content}\nto:\n${after.content || ""}`,
+          content: `<@${before.author.id}> just edited their message ( ${
+            before.url
+          } ) from:\n${before.content}\nto:\n${after.content || ""}`,
           files: before.attachments.map((attachment) => attachment),
         });
       } else {
@@ -2224,7 +2274,7 @@ client.on("messageEdit", async function(before, after) {
   } catch (err) {
     console.log(err);
   }
-})
+});
 
 client.on("guildMemberUpdate", async (before, after) => {
   if (before.nickname !== after.nickname) {
