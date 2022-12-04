@@ -1469,7 +1469,6 @@ client.on("interactionCreate", async function (interaction) {
         reason: "Needed a separate thread for modmail.",
       });
       await dbClient.db("Scatt").collection("modmail").insertOne({ id: thread.id, user: interaction.user.id, open: true });
-      thread.send({ embeds:[await getWarningsEmbed()] })
       var message = await interaction.message.channel.messages.fetch(
         interaction.message.reference.messageId
       );
@@ -1931,7 +1930,6 @@ client.on("interactionCreate", async function (interaction) {
             reason: "Needed a separate thread for modmail.",
           });
           await dbClient.db("Scatt").collection("modmail").insertOne({ id: thread.id, user: user.id, open: true });
-          thread.send({ embeds:[await getWarningsEmbed()] })
           await user.send({ embeds: [openEmbed] });
         }
       }
