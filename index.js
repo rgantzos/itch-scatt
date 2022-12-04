@@ -1260,7 +1260,7 @@ client.on("messageCreate", async function (message) {
     ) {
       var modmailData = await dbClient.db("Scatt").collection("modmail").findOne({ open: true, user: message.author.id })
       if (modmailData) {
-        var existingModmail = await client.channels.fetch(modmailData.id)
+        var existingModmail = await (await client.channels.fetch(scatt.channels.modmail)).threads.fetch(modmailData.id)
       } else {
         var existingModmail = null
       }
@@ -1449,7 +1449,7 @@ client.on("interactionCreate", async function (interaction) {
     var modmailChannel = await client.channels.fetch(scatt.channels.modmail);
     var modmailData = await dbClient.db("Scatt").collection("modmail").findOne({ open: true, user: interaction.user.id })
       if (modmailData) {
-        var existingModmail = await client.channels.fetch(modmailData.id)
+        var existingModmail = await (await client.channels.fetch(scatt.channels.modmail)).threads.fetch(modmailData.id)
       } else {
         var existingModmail = null
       }
@@ -1897,7 +1897,7 @@ client.on("interactionCreate", async function (interaction) {
         );
         var modmailData = await dbClient.db("Scatt").collection("modmail").findOne({ open: true, user: user.id })
       if (modmailData) {
-        var existingModmail = await client.channels.fetch(modmailData.id)
+        var existingModmail = await (await client.channels.fetch(scatt.channels.modmail)).threads.fetch(modmailData.id)
       } else {
         var existingModmail = null
       }
