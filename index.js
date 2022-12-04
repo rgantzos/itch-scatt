@@ -1014,6 +1014,16 @@ client.on("messageCreate", async function (message) {
       .collection("weekly")
       .findOne({ id: message.author.id });
     if (user && user.xp) {
+      var leaderboard = await getLeaderboard()
+      if (leaderboard[0].id !== message.author.id && (leaderboard[0].xp) <= (user.xp+28)) {
+        message.author.send({
+          content: `🥳 Congrats! You've just taken 1st on the ScratchTools leaderboard at ${(user.xp+28).toString()} XP, passing <@${leaderboard[0].id}>!`
+        })
+        var channel = await client.channels.fetch(scatt.channels.server_changes)
+        channel.send({
+          content: `🏎️ <@${message.author.id}> just passed <@${leaderboard[0].id}> in XP, taking 1st place in the entire server at ${(user.xp+28).toString()} XP!`
+        })
+      }
       var oldLevel = Math.floor(user.xp / 1500);
       await dbClient
         .db("Scatt")
