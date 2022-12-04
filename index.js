@@ -733,8 +733,7 @@ async function getLeaderboard() {
   return topAll.reverse();
 }
 
-async function getWarningsEmbed(userId) {
-  var user = await client.users.fetch(userId);
+async function getWarningsEmbed(user) {
   var userWarnings = await dbClient
     .db("Scatt")
     .collection("warnings")
@@ -1459,7 +1458,7 @@ client.on("interactionCreate", async function (interaction) {
         autoArchiveDuration: 1440,
         reason: "Needed a separate thread for modmail.",
       });
-      await thread.send({ embeds: [await getWarningsEmbed()] });
+      await thread.send({ embeds: [await getWarningsEmbed(interaction.user)] });
       var message = await interaction.message.channel.messages.fetch(
         interaction.message.reference.messageId
       );
@@ -1904,7 +1903,7 @@ client.on("interactionCreate", async function (interaction) {
             autoArchiveDuration: 1440,
             reason: "Needed a separate thread for modmail.",
           });
-          await thread.send({ embeds: [await getWarningsEmbed()] });
+          await thread.send({ embeds: [await getWarningsEmbed(user)] });
           await user.send({ embeds: [openEmbed] });
         }
       }
