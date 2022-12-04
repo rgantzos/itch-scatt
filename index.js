@@ -1033,12 +1033,15 @@ client.on("messageCreate", async function (message) {
       message.content !== "" &&
       !message.content.startsWith("\\")
     ) {
-      var modmailInfo = await dbClient.db("Scatt").collection("modmail").findOne({ id: message.channel.id })
-          if (modmailInfo) {
-            var user = await client.users.fetch(modmailInfo.user)
-          } else {
-            var user = null
-          }
+      var modmailInfo = await dbClient
+        .db("Scatt")
+        .collection("modmail")
+        .findOne({ id: message.channel.id });
+      if (modmailInfo) {
+        var user = await client.users.fetch(modmailInfo.user);
+      } else {
+        var user = null;
+      }
       if (modmailInfo && user) {
         await user.send({
           content: `\`${message.author.tag}\` ` + message.content,
@@ -1258,11 +1261,19 @@ client.on("messageCreate", async function (message) {
       !message.webhookId &&
       !message.author.bot
     ) {
-      var modmailData = await dbClient.db("Scatt").collection("modmail").findOne({ open: true, user: message.author.id })
+      var modmailData = await dbClient
+        .db("Scatt")
+        .collection("modmail")
+        .findOne({ open: true, user: message.author.id });
       if (modmailData) {
-        var existingModmail = await (await client.channels.fetch(scatt.channels.modmail)).threads.fetch(modmailData.id)
+        var modmailChannel = await client.channels.fetch(
+          scatt.channels.modmail
+        );
+        var existingModmail = await modmailChannel.threads.cache.find(
+          (x) => x.id === modmailData.id
+        );
       } else {
-        var existingModmail = null
+        var existingModmail = null;
       }
       if (existingModmail) {
         if (message.content && message.content !== "") {
@@ -1447,12 +1458,18 @@ client.on("messageReactionAdd", async function (reaction, user) {
 client.on("interactionCreate", async function (interaction) {
   if (interaction.customId === "startmodmail") {
     var modmailChannel = await client.channels.fetch(scatt.channels.modmail);
-    var modmailData = await dbClient.db("Scatt").collection("modmail").findOne({ open: true, user: interaction.user.id })
-      if (modmailData) {
-        var existingModmail = await (await client.channels.fetch(scatt.channels.modmail)).threads.fetch(modmailData.id)
-      } else {
-        var existingModmail = null
-      }
+    var modmailData = await dbClient
+      .db("Scatt")
+      .collection("modmail")
+      .findOne({ open: true, user: interaction.user.id });
+    if (modmailData) {
+      var modmailChannel = await client.channels.fetch(scatt.channels.modmail);
+      var existingModmail = await modmailChannel.threads.cache.find(
+        (x) => x.id === modmailData.id
+      );
+    } else {
+      var existingModmail = null;
+    }
     await interaction.message.edit({ components: [] });
     if (existingModmail) {
       interaction.reply({
@@ -1468,7 +1485,10 @@ client.on("interactionCreate", async function (interaction) {
         autoArchiveDuration: 1440,
         reason: "Needed a separate thread for modmail.",
       });
-      await dbClient.db("Scatt").collection("modmail").insertOne({ id: thread.id, user: interaction.user.id, open: true });
+      await dbClient
+        .db("Scatt")
+        .collection("modmail")
+        .insertOne({ id: thread.id, user: interaction.user.id, open: true });
       var message = await interaction.message.channel.messages.fetch(
         interaction.message.reference.messageId
       );
@@ -1848,14 +1868,17 @@ client.on("interactionCreate", async function (interaction) {
           interaction.channel &&
           interaction.channel.parentId === scatt.channels.modmail
         ) {
-          var modmailInfo = await dbClient.db("Scatt").collection("modmail").findOne({ id: interaction.channel.id })
+          var modmailInfo = await dbClient
+            .db("Scatt")
+            .collection("modmail")
+            .findOne({ id: interaction.channel.id });
           if (modmailInfo) {
-            var user = await client.users.fetch(modmailInfo.user)
+            var user = await client.users.fetch(modmailInfo.user);
           } else {
-            var user = null
+            var user = null;
           }
           if (user && modmailInfo) {
-            interaction.channel.setName(user.tag+" (CLOSED)");
+            interaction.channel.setName(user.tag + " (CLOSED)");
             var closedEmbed = new EmbedBuilder()
               .setTitle("Modmail Closed")
               .setDescription(
@@ -1895,12 +1918,20 @@ client.on("interactionCreate", async function (interaction) {
         var modmailChannel = await client.channels.fetch(
           scatt.channels.modmail
         );
-        var modmailData = await dbClient.db("Scatt").collection("modmail").findOne({ open: true, user: user.id })
-      if (modmailData) {
-        var existingModmail = await (await client.channels.fetch(scatt.channels.modmail)).threads.fetch(modmailData.id)
-      } else {
-        var existingModmail = null
-      }
+        var modmailData = await dbClient
+          .db("Scatt")
+          .collection("modmail")
+          .findOne({ open: true, user: user.id });
+        if (modmailData) {
+          var modmailChannel = await client.channels.fetch(
+            scatt.channels.modmail
+          );
+          var existingModmail = await modmailChannel.threads.cache.find(
+            (x) => x.id === modmailData.id
+          );
+        } else {
+          var existingModmail = null;
+        }
         if (existingModmail) {
           interaction.reply({
             content: `A modmail already exists with this user: <#${existingModmail.id}>.`,
@@ -1929,7 +1960,10 @@ client.on("interactionCreate", async function (interaction) {
             autoArchiveDuration: 1440,
             reason: "Needed a separate thread for modmail.",
           });
-          await dbClient.db("Scatt").collection("modmail").insertOne({ id: thread.id, user: user.id, open: true });
+          await dbClient
+            .db("Scatt")
+            .collection("modmail")
+            .insertOne({ id: thread.id, user: user.id, open: true });
           await user.send({ embeds: [openEmbed] });
         }
       }
