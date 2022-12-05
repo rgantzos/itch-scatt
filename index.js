@@ -1688,7 +1688,7 @@ client.on("interactionCreate", async function (interaction) {
   .setDescription(dailyMembers)
   .setColor("Blurple")
   .setFooter({ text:"We're still counting!" })
-  await interaction.reply({ embeds:[daily] })
+  await interaction.reply({ embeds:[dailyEmbed] })
       }
     }
     if (commandName === "apply") {
