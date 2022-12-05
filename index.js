@@ -1668,7 +1668,7 @@ client.on("interactionCreate", async function (interaction) {
   if (interaction.type === 2) {
     const { commandName } = interaction;
     if (commandName === "stats") {
-      if (interaction.getSubcommand() === "today") {
+      if (interaction.options.getSubcommand() === "today") {
         var members = await dbClient
     .db("Scatt")
     .collection("daily")
@@ -1688,7 +1688,7 @@ client.on("interactionCreate", async function (interaction) {
   .setDescription(dailyMembers)
   .setColor("Blurple")
   .setFooter({ text:"We're still counting!" })
-  await interaction.reply({ embeds:[dailyEmbed] })
+  await interaction.reply({ embeds:[daily] })
       }
     }
     if (commandName === "apply") {
