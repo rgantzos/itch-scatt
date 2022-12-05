@@ -878,6 +878,16 @@ client.on("messageCreate", async function (message) {
     await message.delete()
     message.channel.send({ embeds:[giveawayEmbed], components:[giveawayRow], content: "<@&1043354855617597461> <@&978772038154088472>" })
   }
+  if (message.content === "!giveaway_end" === message.author.id === scatt.rgantzos) {
+    var everyone = await dbClient.db("Scatt").collection("giveaway").find({}).toArray()
+    var winner = await client.users.fetch(everyone[Math.floor(Math.random()*everyone.length)].id);
+    var winnerEmbed = new EmbedBuilder()
+    .setTitle("The Giveaway Has Ended!")
+    .setDescription("Congratulations to <@"+winner.id+"> for winning the free Discord Nitro! We will be sending you the link to redeem your prize shortly! Thank you to everyone who participated, there were a lot of you. There will be more events like this in the future.")
+    .setColor("Blurple")
+    await message.delete()
+    message.channel.send({ embeds: [winnerEmbed] })
+  }
   if (message.channel.id === scatt.channels.counting) {
     if (
       message.content &&
