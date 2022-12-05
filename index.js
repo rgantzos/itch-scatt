@@ -463,6 +463,15 @@ const xp = new SlashCommandBuilder()
     subcommand.setName("leaderboard").setDescription("View the XP leaderboard!")
   );
 
+  const stats = new SlashCommandBuilder()
+  .setName("stats")
+  .setDescription("Check statistics.")
+  .addSubcommand((subcommand) =>
+    subcommand
+      .setName("today")
+      .setDescription("View how many people have spoken today!")
+  )
+
 const invite = new SlashCommandBuilder()
   .setName("invite")
   .setDescription("Invite a member to become a developer.")
@@ -604,6 +613,7 @@ client.on("ready", async function () {
       config,
       feature,
       apply,
+      stats,
     ],
   });
   //resetCookieCampers()
@@ -1657,6 +1667,30 @@ client.on("interactionCreate", async function (interaction) {
   }
   if (interaction.type === 2) {
     const { commandName } = interaction;
+    if (commandName === "stats") {
+      if (interaction.getSubcommand() === "today") {
+        var members = await dbClient
+    .db("Scatt")
+    .collection("daily")
+    .find({})
+    .toArray();
+  var spoken = [];
+  members.forEach(function (el) {
+    if (el.messages !== 0 && !spoken.includes(el.id)) {
+      spoken.push(el.id);
+    }
+  });
+  var dailyMembers = `Today, ${spoken.length.toString()} have been chatting! They are:\n\n- <@${spoken.join(
+    ">\n- <@"
+  )}>`;
+  var dailyEmbed = new EmbedBuilder()
+  .setTitle(":white_sun_small_cloud: Today's Chatters (There are "+spoken.length.toString()+"!!)")
+  .setDescription(dailyMembers)
+  .setColor("Blurple")
+  .setFooter({ text:"We're still counting!" })
+  await interaction.reply({ embeds:[dailyEmbed] })
+      }
+    }
     if (commandName === "apply") {
       const applicationModal = new ModalBuilder()
         .setCustomId("mod-application")
