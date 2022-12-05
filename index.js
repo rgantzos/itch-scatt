@@ -463,14 +463,14 @@ const xp = new SlashCommandBuilder()
     subcommand.setName("leaderboard").setDescription("View the XP leaderboard!")
   );
 
-  const stats = new SlashCommandBuilder()
+const stats = new SlashCommandBuilder()
   .setName("stats")
   .setDescription("Check statistics.")
   .addSubcommand((subcommand) =>
     subcommand
       .setName("today")
       .setDescription("View how many people have spoken today!")
-  )
+  );
 
 const invite = new SlashCommandBuilder()
   .setName("invite")
@@ -873,30 +873,50 @@ client.on("messageDelete", async function (message) {
 client.on("messageCreate", async function (message) {
   if (message.author.id === scatt.rgantzos && message.content === "!giveaway") {
     var giveawayEmbed = new EmbedBuilder()
-    .setTitle("ScratchTools Nitro Giveaway")
-    .setDescription("<@529773171574833152> has been kind enough to donate Nitro for a giveaway! Click the button below to join the giveaway, where a person will be selected at random!")
-    .setColor("Blurple")
-    .setFooter({ text: "This giveaway ends at 10PM Pacific Standard Time on Dec 4th, 2022." })
-    var giveawayRow = new ActionRowBuilder()
-    .addComponents(
+      .setTitle("ScratchTools Nitro Giveaway")
+      .setDescription(
+        "<@529773171574833152> has been kind enough to donate Nitro for a giveaway! Click the button below to join the giveaway, where a person will be selected at random!"
+      )
+      .setColor("Blurple")
+      .setFooter({
+        text: "This giveaway ends at 10PM Pacific Standard Time on Dec 4th, 2022.",
+      });
+    var giveawayRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-      .setCustomId("giveaway-join-dec4-2022")
-      .setStyle("Success")
-      .setLabel("Join Giveaway")
-      .setEmoji("🥳")
-    )
-    await message.delete()
-    message.channel.send({ embeds:[giveawayEmbed], components:[giveawayRow], content: "<@&1043354855617597461> <@&978772038154088472>" })
+        .setCustomId("giveaway-join-dec4-2022")
+        .setStyle("Success")
+        .setLabel("Join Giveaway")
+        .setEmoji("🥳")
+    );
+    await message.delete();
+    message.channel.send({
+      embeds: [giveawayEmbed],
+      components: [giveawayRow],
+      content: "<@&1043354855617597461> <@&978772038154088472>",
+    });
   }
-  if (message.content === "!giveaway_end" && message.author.id === scatt.rgantzos) {
-    var everyone = await dbClient.db("Scatt").collection("giveaway").find({}).toArray()
-    var winner = await client.users.fetch(everyone[Math.floor(Math.random()*everyone.length)].id);
+  if (
+    message.content === "!giveaway_end" &&
+    message.author.id === scatt.rgantzos
+  ) {
+    var everyone = await dbClient
+      .db("Scatt")
+      .collection("giveaway")
+      .find({})
+      .toArray();
+    var winner = await client.users.fetch(
+      everyone[Math.floor(Math.random() * everyone.length)].id
+    );
     var winnerEmbed = new EmbedBuilder()
-    .setTitle("The Giveaway Has Ended!")
-    .setDescription("Congratulations to <@"+winner.id+"> for winning the free Discord Nitro! We will be sending you the link to redeem your prize shortly! Thank you to everyone who participated, there were a lot of you. There will be more events like this in the future.")
-    .setColor("Blurple")
-    await message.delete()
-    message.channel.send({ embeds: [winnerEmbed] })
+      .setTitle("The Giveaway Has Ended!")
+      .setDescription(
+        "Congratulations to <@" +
+          winner.id +
+          "> for winning the free Discord Nitro! We will be sending you the link to redeem your prize shortly! Thank you to everyone who participated, there were a lot of you. There will be more events like this in the future."
+      )
+      .setColor("Blurple");
+    await message.delete();
+    message.channel.send({ embeds: [winnerEmbed] });
   }
   if (message.channel.id === scatt.channels.counting) {
     if (
@@ -1475,12 +1495,21 @@ client.on("messageReactionAdd", async function (reaction, user) {
 
 client.on("interactionCreate", async function (interaction) {
   if (interaction.customId === "giveaway-join-dec4-2022") {
-    var already = await dbClient.db("Scatt").collection("giveaway").findOne({ id: interaction.user.id })
+    var already = await dbClient
+      .db("Scatt")
+      .collection("giveaway")
+      .findOne({ id: interaction.user.id });
     if (already) {
-      interaction.reply({ content: "You already joined the giveaway!", ephemeral:true })
+      interaction.reply({
+        content: "You already joined the giveaway!",
+        ephemeral: true,
+      });
     } else {
-      await dbClient.db("Scatt").collection("giveaway").insertOne({ id: interaction.user.id, time: Date.now() })
-      interaction.reply({ content: "Joined the giveaway!", ephemeral:true })
+      await dbClient
+        .db("Scatt")
+        .collection("giveaway")
+        .insertOne({ id: interaction.user.id, time: Date.now() });
+      interaction.reply({ content: "Joined the giveaway!", ephemeral: true });
     }
   }
   if (interaction.customId === "startmodmail") {
@@ -1670,25 +1699,27 @@ client.on("interactionCreate", async function (interaction) {
     if (commandName === "stats") {
       if (interaction.options.getSubcommand() === "today") {
         var members = await dbClient
-    .db("Scatt")
-    .collection("daily")
-    .find({})
-    .toArray();
-  var spoken = [];
-  members.forEach(function (el) {
-    if (el.messages !== 0 && !spoken.includes(el.id)) {
-      spoken.push(el.id);
-    }
-  });
-  var dailyMembers = `Today, ${spoken.length.toString()} have been chatting! They are:\n\n- <@${spoken.join(
-    ">\n- <@"
-  )}>`;
-  var dailyEmbed = new EmbedBuilder()
-  .setTitle(":white_sun_small_cloud: Today's Chatters (There are "+spoken.length.toString()+"!!)")
-  .setDescription(dailyMembers)
-  .setColor("Blurple")
-  .setFooter({ text:"We're still counting!" })
-  await interaction.reply({ embeds:[dailyEmbed] })
+          .db("Scatt")
+          .collection("daily")
+          .find({})
+          .toArray();
+        var spoken = [];
+        members.forEach(function (el) {
+          if (el.messages !== 0 && !spoken.includes(el.id)) {
+            spoken.push(el.id);
+          }
+        });
+        var dailyMembers = `- <@${spoken.join(">\n- <@")}>`;
+        var dailyEmbed = new EmbedBuilder()
+          .setTitle(
+            ":white_sun_small_cloud: Today's Chatters (There are " +
+              spoken.length.toString() +
+              "!!)"
+          )
+          .setDescription(dailyMembers)
+          .setColor("Blurple")
+          .setFooter({ text: "We're still counting!" });
+        await interaction.reply({ embeds: [dailyEmbed] });
       }
     }
     if (commandName === "apply") {
