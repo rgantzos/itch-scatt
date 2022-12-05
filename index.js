@@ -878,7 +878,7 @@ client.on("messageCreate", async function (message) {
     await message.delete()
     message.channel.send({ embeds:[giveawayEmbed], components:[giveawayRow], content: "<@&1043354855617597461> <@&978772038154088472>" })
   }
-  if (message.content === "!giveaway_end" === message.author.id === scatt.rgantzos) {
+  if (message.content === "!giveaway_end" &&& message.author.id === scatt.rgantzos) {
     var everyone = await dbClient.db("Scatt").collection("giveaway").find({}).toArray()
     var winner = await client.users.fetch(everyone[Math.floor(Math.random()*everyone.length)].id);
     var winnerEmbed = new EmbedBuilder()
