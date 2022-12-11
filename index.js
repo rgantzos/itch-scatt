@@ -684,10 +684,10 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
       .setStyle("Link")
       .setURL("https://docs.scratchtools.app")
   );
-  await channel.send({embeds:[mainEmbed]})
-  await channel.send({embeds:[rulesEmbed]})
-  await channel.send({embeds:[getRoles]})
-  await channel.send({components:[components]})
+  //await channel.send({embeds:[mainEmbed]})
+  //await channel.send({embeds:[rulesEmbed]})
+  //await channel.send({embeds:[getRoles]})
+  //await channel.send({components:[components]})
 });
 
 client.on("guildMemberRemove", async function (member) {
