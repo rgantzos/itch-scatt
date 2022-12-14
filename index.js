@@ -789,22 +789,16 @@ client.on("guildMemberAdd", async function (member) {
 client.on("messageDelete", async function (message) {
   try {
     if (message.author && !message.author.bot) {
-      const fetchedLogs = await message.guild.fetchAuditLogs({
-        limit: 1,
-        type: AuditLogEvent.MessageDelete,
-      });
-      let deleter = "somebody"
-      console.log(fetchedLogs)
       if (message.content) {
         scatt.log({
           content: `🗑️ <@${message.author.id}> had their message deleted in <#${
             message.channel.id
-          }> by ${deleter}:\n${message.content.toString()}`,
+          }>:\n${message.content.toString()}`,
           files: message.attachments.map((attachment) => attachment),
         });
       } else {
         scatt.log({
-          content: `🗑️ <@${message.author.id}> had their message deleted in <#${message.channel.id}> by ${deleter}:`,
+          content: `🗑️ <@${message.author.id}> had their message deleted in <#${message.channel.id}>`,
           files: message.attachments.map((attachment) => attachment),
         });
       }
