@@ -793,10 +793,11 @@ client.on("messageDelete", async function (message) {
         limit: 1,
         type: AuditLogEvent.MessageDelete,
       });
+      let deleter = "somebody"
       if (fetchedLogs && fetchedLogs.length === 1 && message.id === fetchedLogs[0].id) {
-        const deleter = "<@"+fetchedLogs[0].executer.id+">"
+        deleter = "<@"+fetchedLogs[0].executer.id+">"
       } else {
-        const deleter = "themself"
+        deleter = "themself"
       }
       if (message.content) {
         scatt.log({
