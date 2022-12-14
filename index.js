@@ -795,9 +795,8 @@ client.on("messageDelete", async function (message) {
       });
       let deleter = "somebody"
       if (fetchedLogs && fetchedLogs.id && message.id === fetchedLogs.id) {
-        deleter = "<@"+fetchedLogs.executer.id+">"
+        deleter = "<@"+fetchedLogs.executer.user.id+">"
       } else {
-        console.log(fetchedLogs)
         deleter = "themself"
       }
       if (message.content) {
