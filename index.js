@@ -788,6 +788,11 @@ client.on("guildMemberAdd", async function (member) {
 client.on("messageDelete", async function (message) {
   try {
     if (message.author && !message.author.bot) {
+      const fetchedLogs = await message.guild.fetchAuditLogs({
+        limit: 1,
+        type: AuditLogEvent.MessageDelete,
+      });
+      console.log(fetchedLogs)
       if (message.content) {
         scatt.log({
           content: `🗑️ <@${message.author.id}> had their message deleted in <#${
