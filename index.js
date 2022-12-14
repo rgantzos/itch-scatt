@@ -794,11 +794,7 @@ client.on("messageDelete", async function (message) {
         type: AuditLogEvent.MessageDelete,
       });
       let deleter = "somebody"
-      if (fetchedLogs && fetchedLogs.id && message.id === fetchedLogs.id) {
-        deleter = "<@"+fetchedLogs.executer.user.id+">"
-      } else {
-        deleter = "themself"
-      }
+      console.log(fetchedLogs)
       if (message.content) {
         scatt.log({
           content: `🗑️ <@${message.author.id}> had their message deleted in <#${
