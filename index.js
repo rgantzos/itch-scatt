@@ -600,12 +600,6 @@ const warnings = new SlashCommandBuilder()
 
 client.on("ready", async function () {
   console.log("Logged in as " + client.user.tag + "!");
-  await dbClient.db("Scatt").collection("userdata").deleteMany({
-    xp: 0
-  })
-  await dbClient.db("Scatt").collection("userdata").deleteMany({
-    xp: 28
-  })
   await rest.put(Routes.applicationCommands(client.user.id), {
     body: [
       xp,
@@ -710,43 +704,8 @@ client.on("guildMemberRemove", async function (member) {
 });
 
 async function getLeaderboard() {
-  var topXp = [];
-  var topUsers = [];
-  var topAll = [];
-  var members = await dbClient
-    .db("Scatt")
-    .collection("userdata")
-    .find({})
-    .toArray();
-  var alreadyIDs = [];
-  var newMembers = [];
-  members.forEach(function (el) {
-    if (!alreadyIDs.includes(el.id)) {
-      alreadyIDs.push(el.id);
-      newMembers.push(el);
-    }
-  });
-  members = newMembers;
-  members.forEach(function (el) {
-    topXp.push(el.xp);
-  });
-  topXp.sort(function (a, b) {
-    if (a > b) return 1;
-    if (a < b) return -1;
-    return 0;
-  });
-  topXp.forEach(function (el) {
-    var addedAlready = false;
-    members.forEach(function (user) {
-      if (!addedAlready && user.xp === el && !user.taken) {
-        alreadyAdded = true;
-        user.taken = true;
-        topUsers.push(user.id);
-        topAll.push({ id: user.id, xp: user.xp });
-      }
-    });
-  });
-  return topAll.reverse();
+  var lb = await dbClient.db("Scatt").collection("userdata").find({}).sort( { "xp": 1 } ).toArray()
+  return lb
 }
 
 async function getWarningsEmbed(user) {
@@ -782,43 +741,7 @@ async function getWarningsEmbed(user) {
 }
 
 async function getWeeklyLeaderboard() {
-  var topXp = [];
-  var topUsers = [];
-  var topAll = [];
-  var members = await dbClient
-    .db("Scatt")
-    .collection("weekly")
-    .find({})
-    .toArray();
-  var alreadyIDs = [];
-  var newMembers = [];
-  members.forEach(function (el) {
-    if (!alreadyIDs.includes(el.id)) {
-      alreadyIDs.push(el.id);
-      newMembers.push(el);
-    }
-  });
-  members = newMembers;
-  members.forEach(function (el) {
-    topXp.push(el.xp);
-  });
-  topXp.sort(function (a, b) {
-    if (a > b) return 1;
-    if (a < b) return -1;
-    return 0;
-  });
-  topXp.forEach(function (el) {
-    var addedAlready = false;
-    members.forEach(function (user) {
-      if (!addedAlready && user.xp === el && !user.taken) {
-        alreadyAdded = true;
-        user.taken = true;
-        topUsers.push(user.id);
-        topAll.push({ id: user.id, xp: user.xp });
-      }
-    });
-  });
-  return topAll.reverse();
+  await dbClient.db("Scatt").collection("weekly").find({}).sort( { "xp": 1 } ).toArray()
 }
 
 client.on("guildMemberAdd", async function (member) {
