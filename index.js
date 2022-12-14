@@ -704,7 +704,7 @@ client.on("guildMemberRemove", async function (member) {
 });
 
 async function getLeaderboard() {
-  var lb = await dbClient.db("Scatt").collection("userdata").find({}).sort( { "xp": 1 } ).toArray()
+  var lb = await dbClient.db("Scatt").collection("userdata").find({}).sort( { "xp": 1 } ).toArray().reverse()
   return lb
 }
 
@@ -741,7 +741,8 @@ async function getWarningsEmbed(user) {
 }
 
 async function getWeeklyLeaderboard() {
-  await dbClient.db("Scatt").collection("weekly").find({}).sort( { "xp": 1 } ).toArray()
+  var lb = await dbClient.db("Scatt").collection("weekly").find({}).sort( { "xp": 1 } ).toArray().reverse()
+  return lb
 }
 
 client.on("guildMemberAdd", async function (member) {
