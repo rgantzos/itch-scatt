@@ -1253,7 +1253,7 @@ client.on("messageCreate", async function (message) {
       if (existingModmail) {
         if (message.content && message.content !== "") {
           var webhook = new WebhookClient({
-            url: "https://discord.com/api/webhooks/1002257663771549736/K8uu6rN-y9ZleUHKQALT35CkW4hzW6DctGfkeOuWm1Wuz_fvTq5YQe2yXGjAMF1QopaI",
+            url: process.env.modmailWebhook,
           });
           await webhook.send({
             content: message.content,
@@ -1476,7 +1476,7 @@ client.on("interactionCreate", async function (interaction) {
       if (message && message.content && message.content !== "") {
         message.react("<:successful:1043300109921829054>");
         var webhook = new WebhookClient({
-          url: "https://discord.com/api/webhooks/1002257663771549736/K8uu6rN-y9ZleUHKQALT35CkW4hzW6DctGfkeOuWm1Wuz_fvTq5YQe2yXGjAMF1QopaI",
+          url: process.env.modmailWebhook,
         });
         await webhook.send({
           content: message.content,
