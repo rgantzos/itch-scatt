@@ -1,3 +1,5 @@
+const lastStart = Math.round(Date.now()/1000)
+
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const fetch = (...args) =>
@@ -302,6 +304,11 @@ function getConfigurationEmbed(full) {
         value: `Role: <@&${
           scatt.top_member.role
         }>\nCount: ${scatt.top_member.count.toString()}`,
+        inline: false,
+      }
+      {
+        name: "Last Deployed",
+        value: `<t:${lastStart.toString()}>`,
         inline: false,
       }
     )
@@ -704,7 +711,7 @@ client.on("guildMemberRemove", async function (member) {
 });
 
 async function getLeaderboard() {
-  var lb = await dbClient.db("Scatt").collection("userdata").find({}).sort( { "xp": 1 } ).toArray().reverse()
+  var lb = (await dbClient.db("Scatt").collection("userdata").find({}).sort( { "xp": 1 } ).toArray()).reverse()
   return lb
 }
 
@@ -741,7 +748,7 @@ async function getWarningsEmbed(user) {
 }
 
 async function getWeeklyLeaderboard() {
-  var lb = await dbClient.db("Scatt").collection("weekly").find({}).sort( { "xp": 1 } ).toArray().reverse()
+  var lb = (await dbClient.db("Scatt").collection("weekly").find({}).sort( { "xp": 1 } ).toArray()).reverse()
   return lb
 }
 
