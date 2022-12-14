@@ -740,7 +740,7 @@ async function getLeaderboard() {
       }
     });
   });
-  console.log(await dbClient.db("Scatt").collection("userdata").find({}).sort( { "xp": 1 } )).toArray()
+  console.log(await dbClient.db("Scatt").collection("userdata").find({}).sort( { "xp": 1 } ).toArray())
   return topAll.reverse();
 }
 
