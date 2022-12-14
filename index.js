@@ -22,6 +22,7 @@ const {
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
+  AuditLogEvent
 } = require("discord.js");
 const {
   joinVoiceChannel,
