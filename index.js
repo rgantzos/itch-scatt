@@ -600,6 +600,12 @@ const warnings = new SlashCommandBuilder()
 
 client.on("ready", async function () {
   console.log("Logged in as " + client.user.tag + "!");
+  await dbClient.db("Scatt").collection("userdata").deleteMany({
+    xp: 0
+  })
+  await dbClient.db("Scatt").collection("userdata").deleteMany({
+    xp: 28
+  })
   await rest.put(Routes.applicationCommands(client.user.id), {
     body: [
       xp,
@@ -740,7 +746,6 @@ async function getLeaderboard() {
       }
     });
   });
-  console.log(await dbClient.db("Scatt").collection("userdata").find({}).sort( { "xp": 1 } ).toArray())
   return topAll.reverse();
 }
 
@@ -1112,7 +1117,7 @@ client.on("messageCreate", async function (message) {
       .db("Scatt")
       .collection("weekly")
       .findOne({ id: message.author.id });
-    if (user && user.xp) {
+    if (user && user.xp !== undefined) {
       var leaderboard = await getLeaderboard();
       if (
         leaderboard[0].id !== message.author.id &&
@@ -1211,7 +1216,7 @@ client.on("messageCreate", async function (message) {
       };
       await dbClient.db("Scatt").collection("userdata").insertOne(newUser);
     }
-    if (weeklyUser && weeklyUser.xp) {
+    if (weeklyUser && weeklyUser.xp !== undefined) {
       await dbClient
         .db("Scatt")
         .collection("weekly")
@@ -1578,7 +1583,7 @@ client.on("interactionCreate", async function (interaction) {
       .db("Scatt")
       .collection("userdata")
       .findOne({ id: interaction.user.id });
-    if (userdata && userdata.xp) {
+    if (userdata && userdata.xp !== undefined) {
       await dbClient
         .db("Scatt")
         .collection("userdata")
@@ -2260,7 +2265,7 @@ client.on("interactionCreate", async function (interaction) {
             .db("Scatt")
             .collection("userdata")
             .findOne({ id: userToUse.id });
-          if (user && user.xp) {
+          if (user && user.xp !== undefined) {
             var leaderboard = await getLeaderboard();
             var rank;
             leaderboard.forEach(function (el, i) {
