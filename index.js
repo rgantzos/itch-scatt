@@ -305,7 +305,7 @@ function getConfigurationEmbed(full) {
           scatt.top_member.role
         }>\nCount: ${scatt.top_member.count.toString()}`,
         inline: false,
-      }
+      },
       {
         name: "Last Deployed",
         value: `<t:${lastStart.toString()}>`,
