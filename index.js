@@ -794,8 +794,8 @@ client.on("messageDelete", async function (message) {
         type: AuditLogEvent.MessageDelete,
       });
       let deleter = "somebody"
-      if (fetchedLogs && fetchedLogs.length !== 0 && message.id === fetchedLogs[0].id) {
-        deleter = "<@"+fetchedLogs[0].executer.id+">"
+      if (fetchedLogs && fetchedLogs.id && message.id === fetchedLogs.id) {
+        deleter = "<@"+fetchedLogs.executer.id+">"
       } else {
         console.log(fetchedLogs)
         deleter = "themself"
