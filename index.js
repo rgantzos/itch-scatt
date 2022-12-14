@@ -793,17 +793,21 @@ client.on("messageDelete", async function (message) {
         limit: 1,
         type: AuditLogEvent.MessageDelete,
       });
-      console.log(fetchedLogs)
+      if (fetchedLogs && fetchedLogs.length === 1 && message.id === fetchedLogs[0].id) {
+        const deleter = "<@"+fetchedLogs[0].executer.id+">"
+      } else {
+        const deleter = "themself"
+      }
       if (message.content) {
         scatt.log({
           content: `🗑️ <@${message.author.id}> had their message deleted in <#${
             message.channel.id
-          }>:\n${message.content.toString()}`,
+          }> by ${deleter}:\n${message.content.toString()}`,
           files: message.attachments.map((attachment) => attachment),
         });
       } else {
         scatt.log({
-          content: `🗑️ <@${message.author.id}> had their message deleted in <#${message.channel.id}>:`,
+          content: `🗑️ <@${message.author.id}> had their message deleted in <#${message.channel.id}> by ${deleter}:`,
           files: message.attachments.map((attachment) => attachment),
         });
       }
