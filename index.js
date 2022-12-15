@@ -161,6 +161,10 @@ async function weeklyActive() {
       }
     } catch (err) {}
   });
+  await dbClient
+      .db("Scatt")
+      .collection("weekly")
+      .updatemany({}, { $set: { xp: 0 } }, { upsert: true });
 }
 
 let getWeeklyActive = new CronJob("0 0 * * 0,3", weeklyActive);
@@ -598,7 +602,6 @@ const warnings = new SlashCommandBuilder()
 
 client.on("ready", async function () {
   console.log("Logged in as " + client.user.tag + "!");
-  weeklyActive()
   await rest.put(Routes.applicationCommands(client.user.id), {
     body: [
       xp,
