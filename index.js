@@ -1662,7 +1662,7 @@ client.on("interactionCreate", async function (interaction) {
         ) {
           await member.roles.add(role, "Joined SMP.");
           interaction.reply({content:"Joined the SMP!", ephemeral:true})
-          await log({ content: `<@${interaction.user.id}> joined the SMP!` })
+          await scatt.log({ content: `<@${interaction.user.id}> joined the SMP!` })
         } else {
           interaction.reply({content:"You're already in the SMP!", ephemeral:true})
         }
