@@ -92,6 +92,7 @@ const scatt = {
     role: "1043052399943761980",
   },
   moderator: "961725317427384442",
+  smp: "1051215713475493920",
   whitelist: [
     "fart",
     "sex",
@@ -465,6 +466,14 @@ const xp = new SlashCommandBuilder()
     subcommand.setName("leaderboard").setDescription("View the XP leaderboard!")
   );
 
+const smp = new SlashCommandBuilder()
+.setName("smp")
+.setDescription("Do stuff with the SMP.")
+.addSubcommand((subcommand) => 
+subcommand
+.setname("join")
+.setDescription("Join the ScratchTools SMP."))
+
 const stats = new SlashCommandBuilder()
   .setName("stats")
   .setDescription("Check statistics.")
@@ -616,6 +625,7 @@ client.on("ready", async function () {
       feature,
       apply,
       stats,
+      smp,
     ],
   });
   //resetCookieCampers()
@@ -1642,6 +1652,21 @@ client.on("interactionCreate", async function (interaction) {
   }
   if (interaction.type === 2) {
     const { commandName } = interaction;
+    if (commandName === "smp") {
+      if (interaction.options.getSubcommand() === "join") {
+        var member = interaction.member
+        var role = await interaction.guild.roles.fetch(scatt.smp);
+        if (
+          !member.roles.cache.some((role) => role.id === scatt.smp)
+        ) {
+          await member.roles.add(role, "Joined SMP.");
+          interaction.reply({content:"Joined the SMP!", ephemeral:true})
+          await log({ content: `<@${interaction.user.id}> joined the SMP!` })
+        } else {
+          interaction.reply({content:"You're already in the SMP!", ephemeral:true})
+        }
+      }
+    }
     if (commandName === "stats") {
       if (interaction.options.getSubcommand() === "today") {
         var members = await dbClient
