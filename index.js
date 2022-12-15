@@ -52,6 +52,8 @@ const scatt = {
     { text: "misty", reaction: "<:misty:1048674846852251658>" },
     { text: "rgantzos", reaction: "<:rgantzos:1048674850501300344>" },
     { text: "daniel", reaction: "<:daniel:1048675920027852921>" },
+    { text: "plert", reaction: "<a:plert:1052748722590711939>" },
+    { text: "mater", reaction: "<:mater:1052770087498690600>" },
   ],
   channels: {
     server_changes: "1043042679111561257",
