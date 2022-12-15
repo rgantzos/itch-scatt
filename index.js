@@ -22,7 +22,6 @@ const {
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
-  AuditLogEvent
 } = require("discord.js");
 const {
   joinVoiceChannel,
@@ -791,14 +790,14 @@ client.on("messageDelete", async function (message) {
     if (message.author && !message.author.bot) {
       if (message.content) {
         scatt.log({
-          content: `🗑️ <@${message.author.id}> had their message deleted in <#${
+          content: `🗑️ <@${message.author.id}>'s message was deleted in <#${
             message.channel.id
           }>:\n${message.content.toString()}`,
           files: message.attachments.map((attachment) => attachment),
         });
       } else {
         scatt.log({
-          content: `🗑️ <@${message.author.id}> had their message deleted in <#${message.channel.id}>`,
+          content: `🗑️ <@${message.author.id}>'s message was deleted in <#${message.channel.id}>`,
           files: message.attachments.map((attachment) => attachment),
         });
       }
