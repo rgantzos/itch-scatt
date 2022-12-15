@@ -469,9 +469,10 @@ const xp = new SlashCommandBuilder()
 const smp = new SlashCommandBuilder()
 .setName("smp")
 .setDescription("Do stuff with the SMP.")
+.setDMPermission(false)
 .addSubcommand((subcommand) => 
 subcommand
-.setname("join")
+.setName("join")
 .setDescription("Join the ScratchTools SMP."))
 
 const stats = new SlashCommandBuilder()
