@@ -161,17 +161,6 @@ async function weeklyActive() {
       }
     } catch (err) {}
   });
-  var members = await dbClient
-    .db("Scatt")
-    .collection("weekly")
-    .find({})
-    .toArray();
-  members.forEach(async function (el) {
-    await dbClient
-      .db("Scatt")
-      .collection("weekly")
-      .updateOne({ id: el.id }, { $set: { xp: 0 } }, { upsert: true });
-  });
 }
 
 let getWeeklyActive = new CronJob("0 0 * * 0,3", weeklyActive);
@@ -609,6 +598,7 @@ const warnings = new SlashCommandBuilder()
 
 client.on("ready", async function () {
   console.log("Logged in as " + client.user.tag + "!");
+  weeklyActive()
   await rest.put(Routes.applicationCommands(client.user.id), {
     body: [
       xp,
