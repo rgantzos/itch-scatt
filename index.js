@@ -1,4 +1,4 @@
-const lastStart = Math.round(Date.now()/1000)
+const lastStart = Math.round(Date.now() / 1000);
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
@@ -711,8 +711,15 @@ client.on("guildMemberRemove", async function (member) {
 });
 
 async function getLeaderboard() {
-  var lb = (await dbClient.db("Scatt").collection("userdata").find({}).sort( { "xp": 1 } ).toArray()).reverse()
-  return lb
+  var lb = (
+    await dbClient
+      .db("Scatt")
+      .collection("userdata")
+      .find({})
+      .sort({ xp: 1 })
+      .toArray()
+  ).reverse();
+  return lb;
 }
 
 async function getWarningsEmbed(user) {
@@ -748,8 +755,15 @@ async function getWarningsEmbed(user) {
 }
 
 async function getWeeklyLeaderboard() {
-  var lb = (await dbClient.db("Scatt").collection("weekly").find({}).sort( { "xp": 1 } ).toArray()).reverse()
-  return lb
+  var lb = (
+    await dbClient
+      .db("Scatt")
+      .collection("weekly")
+      .find({})
+      .sort({ xp: 1 })
+      .toArray()
+  ).reverse();
+  return lb;
 }
 
 client.on("guildMemberAdd", async function (member) {
