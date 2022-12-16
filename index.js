@@ -1031,7 +1031,7 @@ client.on("messageCreate", async function (message) {
       message.react(el.reaction);
     }
   });
-  if (message.channel.type !== 1) {
+  if (message.channel.type !== 1 && message.channel.parentId !== scatt.simulate && message.channel.id !== scatt.simulate) {
     if (message.author.id !== client.user.id) {
       var fakeChannel = await client.channels.fetch(scatt.simulate);
       if (fakeChannel) {
