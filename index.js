@@ -1803,12 +1803,13 @@ client.on("interactionCreate", async function (interaction) {
         selfDeaf: false,
       });
       const player = createAudioPlayer({
-        behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
+        behaviors: {  },
       });
       connection.subscribe(player);
       player.play(
         createAudioResource("https://music.rgantzos.repl.co/music.mp3"),
       );
+
       interaction.reply({content:"well it worked"})
       } catch(err) {
         interaction.reply({content:err.toString()})
