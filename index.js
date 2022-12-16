@@ -32,6 +32,7 @@ const {
 	createAudioResource,
 	AudioPlayerStatus,
 } = require("@discordjs/voice");
+const path = require("path")
 const { exec } = require("child_process");
 const { REST } = require("@discordjs/rest");
 const rest = new REST({ version: "10" }).setToken(process.env.token);
@@ -1805,7 +1806,9 @@ client.on("interactionCreate", async function (interaction) {
       const player = createAudioPlayer();
       connection.subscribe(player);
       player.play(
-        createAudioResource("./resources/music.mp3"),
+        createAudioResource(
+          path.join(__dirname, "/resources/music.mp3")
+        ),
       );
       interaction.reply({content:"well it worked"})
       } catch(err) {
