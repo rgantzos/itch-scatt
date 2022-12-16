@@ -630,6 +630,9 @@ client.on("ready", async function () {
       music,
     ],
   });
+  await scatt.log({
+    content: "🤖 Scatt restarted!"
+  })
   //resetCookieCampers()
   //weeklyActive()
   var channel = await client.channels.fetch(scatt.channels.info);
