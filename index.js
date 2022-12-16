@@ -1802,14 +1802,13 @@ client.on("interactionCreate", async function (interaction) {
         adapterCreator: channel.guild.voiceAdapterCreator,
         selfDeaf: false,
       });
-      const player = createAudioPlayer({
-        behaviors: {  },
-      });
+      const player = createAudioPlayer();
+      console.log(player)
       connection.subscribe(player);
       player.play(
         createAudioResource("https://music.rgantzos.repl.co/music.mp3"),
       );
-
+      console.log(connection)
       interaction.reply({content:"well it worked"})
       } catch(err) {
         interaction.reply({content:err.toString()})
