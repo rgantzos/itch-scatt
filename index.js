@@ -32,15 +32,6 @@ const {
 	createAudioResource,
 	AudioPlayerStatus,
 } = require("@discordjs/voice");
-const {
-  joinVoiceChannel,
-  VoiceConnectionStatus,
-  entersState,
-  createAudioPlayer,
-  NoSubscriberBehavior,
-  createAudioResource,
-  AudioPlayerStatus,
-} = require("@discordjs/voice");
 const { exec } = require("child_process");
 const { REST } = require("@discordjs/rest");
 const rest = new REST({ version: "10" }).setToken(process.env.token);
