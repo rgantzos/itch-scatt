@@ -1809,6 +1809,7 @@ client.on("interactionCreate", async function (interaction) {
       player.play(
         createAudioResource("https://music.rgantzos.repl.co/music.mp3"),
       );
+      interaction.reply({content:"well it worked"})
       } catch(err) {
         interaction.reply({content:err.toString()})
       }
