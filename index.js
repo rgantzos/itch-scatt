@@ -1794,6 +1794,7 @@ client.on("interactionCreate", async function (interaction) {
       await interaction.showModal(applicationModal);
     }
     if (commandName === "music") {
+      try {
       var channel = await client.channels.fetch(scatt.channels.voice)
       const connection = joinVoiceChannel({
         channelId: channel.id,
@@ -1808,6 +1809,9 @@ client.on("interactionCreate", async function (interaction) {
       player.play(
         createAudioResource("https://music.rgantzos.repl.co/music.mp3"),
       );
+      } catch(err) {
+        interaction.reply({content:err.toString()})
+      }
     }
     if (commandName === "feature") {
       function similarity(s1, s2) {
