@@ -1147,7 +1147,7 @@ client.on("messageCreate", async function (message) {
                 files: message.attachments.map((attachment) => attachment),
                 username: message.author.username,
                 avatarURL: message.author.avatarURL(),
-                embeds: [],
+                embeds: message.embeds,
                 threadId: existingThread.id,
               });
             } else {
@@ -1167,7 +1167,7 @@ client.on("messageCreate", async function (message) {
                 files: message.attachments.map((attachment) => attachment),
                 username: message.author.username,
                 avatarURL: message.author.avatarURL(),
-                embeds: [],
+                embeds: message.embeds,
                 threadId: thread.id,
               });
             }
