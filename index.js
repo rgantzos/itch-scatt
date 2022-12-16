@@ -105,6 +105,7 @@ const scatt = {
     "screw",
     "screwing",
   ],
+  simulate: "1053112005533380670",
 };
 
 const dbClient = new MongoClient(process.env.database, {
@@ -163,9 +164,9 @@ async function weeklyActive() {
     } catch (err) {}
   });
   await dbClient
-      .db("Scatt")
-      .collection("weekly")
-      .updatemany({}, { $set: { xp: 0 } }, { upsert: true });
+    .db("Scatt")
+    .collection("weekly")
+    .updatemany({}, { $set: { xp: 0 } }, { upsert: true });
 }
 
 let getWeeklyActive = new CronJob("0 0 * * 0,3", weeklyActive);
@@ -467,13 +468,12 @@ const xp = new SlashCommandBuilder()
   );
 
 const smp = new SlashCommandBuilder()
-.setName("smp")
-.setDescription("Do stuff with the SMP.")
-.setDMPermission(false)
-.addSubcommand((subcommand) => 
-subcommand
-.setName("join")
-.setDescription("Join the ScratchTools SMP."))
+  .setName("smp")
+  .setDescription("Do stuff with the SMP.")
+  .setDMPermission(false)
+  .addSubcommand((subcommand) =>
+    subcommand.setName("join").setDescription("Join the ScratchTools SMP.")
+  );
 
 const stats = new SlashCommandBuilder()
   .setName("stats")
@@ -1119,7 +1119,60 @@ client.on("messageCreate", async function (message) {
         var botsChannel = await client.channels.fetch(scatt.channels.bots);
         botsChannel.send({ embeds: [upgradeEmbed] });
       }
+      if (message.channel && message.channel.parentId === scatt.simulate) {
+        var channel = await client.channels.fetch(message.channel.name);
+        if (channel) {
+          await channel.send({
+            content: message.content,
+            files: message.attachments.map((attachment) => attachment),
+          });
+          await message.react(scatt.emojis.successful);
+        } else {
+          await message.react(scatt.emojis.unsuccessful);
+        }
+      }
       if (message.guild.id === scatt.server) {
+        if (message.author.id !== client.user.id) {
+          var fakeChannel = await client.channels.fetch(scatt.simulate);
+          if (fakeChannel) {
+            var existingThread = await fakeChannel.threads.cache.find(
+              (x) => x.name === message.channel.id
+            );
+            if (existingThread) {
+              var webhook = new WebhookClient({
+                url: process.env.simulationWebhook,
+              });
+              await webhook.send({
+                content: message.content,
+                files: message.attachments.map((attachment) => attachment),
+                username: message.author.username,
+                avatarURL: message.author.avatarURL(),
+                embeds: [],
+                threadId: existingThread.id,
+              });
+            } else {
+              var msg = await fakeChannel.send({
+                content: `<#${message.channel.id}>`,
+              });
+              var thread = await msg.startThread({
+                name: message.channel.id,
+                autoArchiveDuration: 1440,
+                reason: "Needed a channel for talking.",
+              });
+              var webhook = new WebhookClient({
+                url: process.env.simulationWebhook,
+              });
+              await webhook.send({
+                content: message.content,
+                files: message.attachments.map((attachment) => attachment),
+                username: message.author.username,
+                avatarURL: message.author.avatarURL(),
+                embeds: [],
+                threadId: thread.id,
+              });
+            }
+          }
+        }
         var member = message.member;
         var roles = await message.guild.roles.fetch();
         const role = roles.find((role) =>
@@ -1655,16 +1708,19 @@ client.on("interactionCreate", async function (interaction) {
     const { commandName } = interaction;
     if (commandName === "smp") {
       if (interaction.options.getSubcommand() === "join") {
-        var member = interaction.member
+        var member = interaction.member;
         var role = await interaction.guild.roles.fetch(scatt.smp);
-        if (
-          !member.roles.cache.some((role) => role.id === scatt.smp)
-        ) {
+        if (!member.roles.cache.some((role) => role.id === scatt.smp)) {
           await member.roles.add(role, "Joined SMP.");
-          interaction.reply({content:"Joined the SMP!", ephemeral:true})
-          await scatt.log({ content: `<@${interaction.user.id}> joined the SMP!` })
+          interaction.reply({ content: "Joined the SMP!", ephemeral: true });
+          await scatt.log({
+            content: `<@${interaction.user.id}> joined the SMP!`,
+          });
         } else {
-          interaction.reply({content:"You're already in the SMP!", ephemeral:true})
+          interaction.reply({
+            content: "You're already in the SMP!",
+            ephemeral: true,
+          });
         }
       }
     }
