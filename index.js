@@ -1803,6 +1803,9 @@ client.on("interactionCreate", async function (interaction) {
         selfDeaf: false,
       });
       const player = createAudioPlayer();
+      player.on('error', error => {
+        console.error(`Error: ${error.message} with resource ${error.resource.metadata.title}`);
+    });
       connection.subscribe(player);
       player.play(
         createAudioResource("./resources/music.mp3"),
