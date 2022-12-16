@@ -24,6 +24,15 @@ const {
   TextInputStyle,
 } = require("discord.js");
 const {
+	joinVoiceChannel,
+	VoiceConnectionStatus,
+	entersState,
+	createAudioPlayer,
+	NoSubscriberBehavior,
+	createAudioResource,
+	AudioPlayerStatus,
+} = require("@discordjs/voice");
+const {
   joinVoiceChannel,
   VoiceConnectionStatus,
   entersState,
@@ -627,6 +636,7 @@ client.on("ready", async function () {
       apply,
       stats,
       smp,
+      music,
     ],
   });
   //resetCookieCampers()
@@ -1790,7 +1800,7 @@ client.on("interactionCreate", async function (interaction) {
       await interaction.showModal(applicationModal);
     }
     if (commandName === "music") {
-      var channel = await client.channels.fetch(scatt.channels.voice);
+      var channel = await client.channels.fetch(scatt.channels.voice)
       const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guild.id,
@@ -1798,15 +1808,12 @@ client.on("interactionCreate", async function (interaction) {
         selfDeaf: false,
       });
       const player = createAudioPlayer({
-        behaviors: {
-          noSubscriber: NoSubscriberBehavior.Pause,
-        },
+        behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
       });
-      const resource = createAudioResource(
-        "https://music.rgantzos.repl.co/music.mp3"
-      );
       connection.subscribe(player);
-      player.play(resource);
+      player.play(
+        createAudioResource("https://music.rgantzos.repl.co/music.mp3"),
+      );
     }
     if (commandName === "feature") {
       function similarity(s1, s2) {
