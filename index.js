@@ -1031,6 +1031,49 @@ client.on("messageCreate", async function (message) {
       message.react(el.reaction);
     }
   });
+  if (message.channel.type !== 1) {
+    if (message.author.id !== client.user.id) {
+      var fakeChannel = await client.channels.fetch(scatt.simulate);
+      if (fakeChannel) {
+        var existingThread = await fakeChannel.threads.cache.find(
+          (x) => x.name === message.channel.id
+        );
+        if (existingThread) {
+          var webhook = new WebhookClient({
+            url: process.env.simulationWebhook,
+          });
+          await webhook.send({
+            content: message.content,
+            files: message.attachments.map((attachment) => attachment),
+            username: message.author.username,
+            avatarURL: message.author.avatarURL(),
+            embeds: message.embeds,
+            threadId: existingThread.id,
+          });
+        } else {
+          var msg = await fakeChannel.send({
+            content: `<#${message.channel.id}>`,
+          });
+          var thread = await msg.startThread({
+            name: message.channel.id,
+            autoArchiveDuration: 1440,
+            reason: "Needed a channel for talking.",
+          });
+          var webhook = new WebhookClient({
+            url: process.env.simulationWebhook,
+          });
+          await webhook.send({
+            content: message.content,
+            files: message.attachments.map((attachment) => attachment),
+            username: message.author.username,
+            avatarURL: message.author.avatarURL(),
+            embeds: message.embeds,
+            threadId: thread.id,
+          });
+        }
+      }
+    }
+  }
   if (!message.author.bot && message.channel.type !== 1) {
     function isNumeric(str) {
       if (typeof str != "string") return false; // we only process strings!
