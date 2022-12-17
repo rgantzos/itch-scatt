@@ -711,23 +711,26 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
     guildId: channel.guild.id,
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
-
-  const music1 = createAudioResource(
-    path.join(__dirname, "/resources/music-1.mp3")
-  );
-  const music2 = createAudioResource(
+  let currentlyPlaying
+  currentlyPlaying = createAudioResource(
     path.join(__dirname, "/resources/music-2.mp3")
   );
   const player = createAudioPlayer();
-  player.play(music1);
+  player.play(currentlyPlaying);
   let current = "1"
   connection.subscribe(player);
   player.on(AudioPlayerStatus.Idle, () => {
     if (current === "1") {
       current = "2"
+      const music2 = createAudioResource(
+        path.join(__dirname, "/resources/music-2.mp3")
+      );
       player.play(music2);
     } else {
       current = "1"
+      const music1 = createAudioResource(
+        path.join(__dirname, "/resources/music-1.mp3")
+      );
       player.play(music1);
     }
   });
