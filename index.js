@@ -1076,7 +1076,7 @@ client.on("messageCreate", async function (message) {
       message.react(el.reaction);
     }
   });
-  if (message.channel.id === scatt.answer && !message.author.bot) {
+  if (message.channel.id === scatt.answer && message.author.id !== client.user.id) {
     if (message.referenceId) {
       var original = await dbClient
         .db("Scatt")
