@@ -67,7 +67,7 @@ const scatt = {
     welcoming: "973239218518245386",
     staff_cmd: "945351020530245652",
     counting: "945352412779126885",
-    voice: "945845893272338453",
+    music: "1053697894517047378",
   },
   min_reactions: 5,
   rgantzos: "810336621198835723",
@@ -705,33 +705,34 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
   //await channel.send({embeds:[rulesEmbed]})
   //await channel.send({embeds:[getRoles]})
   //await channel.send({components:[components]})
-  var channel = await client.channels.fetch(scatt.channels.voice);
+  var channel = await client.channels.fetch(scatt.channels.music);
   const connection = joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guild.id,
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
+  const music = ["/resources/music-1.mp3", "/resources/music-2.mp3", "/resources/music-3.mp3"]
   let currentlyPlaying
   currentlyPlaying = createAudioResource(
-    path.join(__dirname, "/resources/music-2.mp3")
+    path.join(__dirname, music[0])
   );
+  var rn = 0
   const player = createAudioPlayer();
-  player.play(currentlyPlaying);
-  let current = "1"
+  player.play(currentlyPlaying)
   connection.subscribe(player);
   player.on(AudioPlayerStatus.Idle, () => {
-    if (current === "1") {
-      current = "2"
-      const music2 = createAudioResource(
-        path.join(__dirname, "/resources/music-2.mp3")
+    if ((rn+1) === music.length) {
+      rn = 0
+      currentlyPlaying = createAudioResource(
+        path.join(__dirname, music[rn])
       );
-      player.play(music2);
+      player.play(currentlyPlaying)
     } else {
-      current = "1"
-      const music1 = createAudioResource(
-        path.join(__dirname, "/resources/music-1.mp3")
+      rn = rn+1
+      currentlyPlaying = createAudioResource(
+        path.join(__dirname, music[rn])
       );
-      player.play(music1);
+      player.play(currentlyPlaying)
     }
   });
 });
