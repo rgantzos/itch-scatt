@@ -712,14 +712,24 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
 
-  const resource = createAudioResource(
+  const music1 = createAudioResource(
+    path.join(__dirname, "/resources/music-1.mp3")
+  );
+  const music2 = createAudioResource(
     path.join(__dirname, "/resources/music-2.mp3")
   );
   const player = createAudioPlayer();
-  player.play(resource);
+  player.play(music1);
+  let current = "1"
   connection.subscribe(player);
   player.on(AudioPlayerStatus.Idle, () => {
-    player.play(resource);
+    if (current === "1") {
+      current = "2"
+      player.play(music2);
+    } else {
+      current = "1"
+      player.play(music1);
+    }
   });
 });
 
