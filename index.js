@@ -24,15 +24,15 @@ const {
   TextInputStyle,
 } = require("discord.js");
 const {
-	joinVoiceChannel,
-	VoiceConnectionStatus,
-	entersState,
-	createAudioPlayer,
-	NoSubscriberBehavior,
-	createAudioResource,
-	AudioPlayerStatus,
+  joinVoiceChannel,
+  VoiceConnectionStatus,
+  entersState,
+  createAudioPlayer,
+  NoSubscriberBehavior,
+  createAudioResource,
+  AudioPlayerStatus,
 } = require("@discordjs/voice");
-const path = require("path")
+const path = require("path");
 const { exec } = require("child_process");
 const { REST } = require("@discordjs/rest");
 const rest = new REST({ version: "10" }).setToken(process.env.token);
@@ -632,8 +632,8 @@ client.on("ready", async function () {
     ],
   });
   await scatt.log({
-    content: "🤖 Scatt restarted!"
-  })
+    content: "🤖 Scatt restarted!",
+  });
   //resetCookieCampers()
   //weeklyActive()
   var channel = await client.channels.fetch(scatt.channels.info);
@@ -710,8 +710,10 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
 
 client.on("guildMemberRemove", async function (member) {
   if (member.guild.id === scatt.server) {
-    var count = member.guild.memberCount
-    await (await client.channels.fetch("945348551599349770")).setName("😎 General - "+count.toString()+"/500 Members")
+    var count = member.guild.memberCount;
+    await (
+      await client.channels.fetch("945348551599349770")
+    ).setName("😎 General - " + count.toString() + "/500 Members");
     var logs = await client.channels.fetch(scatt.channels.logs);
     logs.send({
       content: `<:goodbye:1043391556553555978> <@${member.id}> just left.`,
@@ -781,8 +783,10 @@ async function getWeeklyLeaderboard() {
 
 client.on("guildMemberAdd", async function (member) {
   if (member.guild.id === scatt.server) {
-    var count = member.guild.memberCount
-    await (await client.channels.fetch("945348551599349770")).setName("😎 General - "+count.toString()+"/500 Members")
+    var count = member.guild.memberCount;
+    await (
+      await client.channels.fetch("945348551599349770")
+    ).setName("😎 General - " + count.toString() + "/500 Members");
     var possibleMessages = [
       `Woah, let's welcome <@${member.user.id}> to the best server ever!`,
       `Wow!!! It's the real <@${member.user.id}>!! Welcome!`,
@@ -1040,7 +1044,11 @@ client.on("messageCreate", async function (message) {
       message.react(el.reaction);
     }
   });
-  if (message.channel.type !== 1 && message.channel.parentId !== scatt.simulate && message.channel.id !== scatt.simulate) {
+  if (
+    message.channel.type !== 1 &&
+    message.channel.parentId !== scatt.simulate &&
+    message.channel.id !== scatt.simulate
+  ) {
     if (message.author.id !== client.user.id) {
       var fakeChannel = await client.channels.fetch(scatt.simulate);
       if (fakeChannel) {
@@ -1800,26 +1808,22 @@ client.on("interactionCreate", async function (interaction) {
     }
     if (commandName === "music") {
       try {
-      var channel = await client.channels.fetch(scatt.channels.voice)
-      const connection = joinVoiceChannel({
-        channelId: channel.id,
-        guildId: channel.guild.id,
-        adapterCreator: channel.guild.voiceAdapterCreator,
-        selfDeaf: false,
-      });
-      const player = createAudioPlayer();
-      player.on('error', error => {
-        console.error(`Error: ${error.message} with resource ${error.resource.metadata.title}`);
-    });
-      connection.subscribe(player);
-      player.play(
-        createAudioResource(
-          path.join(__dirname, "/resources/music.mp3")
-        ),
-      );
-      interaction.reply({content:"well it worked"})
-      } catch(err) {
-        interaction.reply({content:err.toString()})
+        var channel = await client.channels.fetch(scatt.channels.voice);
+        const connection = joinVoiceChannel({
+          channelId: channel.id,
+          guildId: channel.guild.id,
+          adapterCreator: channel.guild.voiceAdapterCreator,
+        });
+
+        const resource = createAudioResource(
+          join(__dirname, "/resources/music.mp3")
+        );
+        const player = createAudioPlayer();
+        player.play(resource);
+        connection.subscribe(player);
+        interaction.reply({ content: "well it worked" });
+      } catch (err) {
+        interaction.reply({ content: err.toString() });
       }
     }
     if (commandName === "feature") {
