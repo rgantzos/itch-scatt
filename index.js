@@ -110,6 +110,8 @@ const scatt = {
     "screwing",
   ],
   simulate: "1053112005533380670",
+  ask: "1053718807321006160",
+  answer: "1053803513400004678",
 };
 
 const dbClient = new MongoClient(process.env.database, {
@@ -714,28 +716,26 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
     guildId: channel.guild.id,
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
-  const music = ["/resources/music-1.mp3", "/resources/music-2.mp3", "/resources/music-3.mp3"]
-  let currentlyPlaying
-  currentlyPlaying = createAudioResource(
-    path.join(__dirname, music[0])
-  );
-  var rn = 0
+  const music = [
+    "/resources/music-1.mp3",
+    "/resources/music-2.mp3",
+    "/resources/music-3.mp3",
+  ];
+  let currentlyPlaying;
+  currentlyPlaying = createAudioResource(path.join(__dirname, music[0]));
+  var rn = 0;
   const player = createAudioPlayer();
-  player.play(currentlyPlaying)
+  player.play(currentlyPlaying);
   connection.subscribe(player);
   player.on(AudioPlayerStatus.Idle, () => {
-    if ((rn+1) === music.length) {
-      rn = 0
-      currentlyPlaying = createAudioResource(
-        path.join(__dirname, music[rn])
-      );
-      player.play(currentlyPlaying)
+    if (rn + 1 === music.length) {
+      rn = 0;
+      currentlyPlaying = createAudioResource(path.join(__dirname, music[rn]));
+      player.play(currentlyPlaying);
     } else {
-      rn = rn+1
-      currentlyPlaying = createAudioResource(
-        path.join(__dirname, music[rn])
-      );
-      player.play(currentlyPlaying)
+      rn = rn + 1;
+      currentlyPlaying = createAudioResource(path.join(__dirname, music[rn]));
+      player.play(currentlyPlaying);
     }
   });
 });
@@ -1076,11 +1076,62 @@ client.on("messageCreate", async function (message) {
       message.react(el.reaction);
     }
   });
+  if (message.channel.id === scatt.answer && !message.author.bot) {
+    if (message.referenceId) {
+      var original = await dbClient
+        .db("Scatt")
+        .collection("ask")
+        .findOne({ copy: message.referenceId });
+      if (original) {
+        var originalMsg = await (
+          await client.channels.fetch(scatt.ask)
+        ).messages.fetch(original.id);
+        if (originalMsg) {
+          var msg = await originalMsg.reply({
+            content: message.content,
+            files: message.attachments.map((attachment) => attachment),
+          });
+          await dbClient.db("Scatt").collection("ask").insertOne({
+            copy: message.id,
+            id: msg.id,
+          });
+        }
+      }
+    } else {
+      var msg = await (
+        await client.channels.fetch(scatt.ask)
+      ).send({
+        content: message.content,
+        files: message.attachments.map((attachment) => attachment),
+      });
+      await dbClient.db("Scatt").collection("ask").insertOne({
+        copy: message.id,
+        id: msg.id,
+      });
+    }
+  }
   if (
     message.channel.type !== 1 &&
     message.channel.parentId !== scatt.simulate &&
-    message.channel.id !== scatt.simulate
+    message.channel.id !== scatt.simulate &&
+    message.channel.id !== scatt.answer
   ) {
+    if (message.channel.id === scatt.ask) {
+      var webhook = new WebhookClient({
+        url: process.env.askWebhook,
+      });
+      var msg = await webhook.send({
+        content: message.content,
+        files: message.attachments.map((attachment) => attachment),
+        username: message.author.username,
+        avatarURL: message.author.avatarURL(),
+        embeds: message.embeds,
+      });
+      await dbClient.db("Scatt").collection("ask").insertOne({
+        id: message.id,
+        copy: msg.id,
+      });
+    }
     if (message.author.id !== client.user.id) {
       var fakeChannel = await client.channels.fetch(scatt.simulate);
       if (fakeChannel) {
@@ -2436,9 +2487,10 @@ client.on("messageEdit", async function (before, after) {
 });
 
 client.on("guildMemberUpdate", async (before, after) => {
-  if (before.nickname !== after.nickname && !message.member.roles.cache.some(
-    (role) => role.name === "Moderator"
-  )) {
+  if (
+    before.nickname !== after.nickname &&
+    !before.roles.cache.some((role) => role.name === "Moderator")
+  ) {
     if (after.nickname) {
       var channel = await client.channels.fetch(scatt.channels.logs);
       channel.send({
