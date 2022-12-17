@@ -418,6 +418,12 @@ const music = new SlashCommandBuilder()
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
   .setDescription("Play music in voice channel.");
 
+  const kill = new SlashCommandBuilder()
+  .setName("kill")
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+  .setDMPermission(false)
+  .setDescription("Restart the bot.");
+
 const config = new SlashCommandBuilder()
   .setName("config")
   .setDescription("View the configurations for Scatt.");
@@ -633,6 +639,7 @@ client.on("ready", async function () {
       apply,
       stats,
       smp,
+      kill,
     ],
   });
   await scatt.log({
@@ -1774,6 +1781,10 @@ client.on("interactionCreate", async function (interaction) {
   }
   if (interaction.type === 2) {
     const { commandName } = interaction;
+    if (commandName === "kill") {
+      interaction.reply({ content: "Restarting bot..." })
+      process.exit(1);
+    }
     if (commandName === "smp") {
       if (interaction.options.getSubcommand() === "join") {
         var member = interaction.member;
