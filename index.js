@@ -1782,7 +1782,7 @@ client.on("interactionCreate", async function (interaction) {
   if (interaction.type === 2) {
     const { commandName } = interaction;
     if (commandName === "kill") {
-      interaction.reply({ content: "Restarting bot..." })
+      await interaction.reply({ content: "Restarting bot..." })
       process.exit(1);
     }
     if (commandName === "smp") {
