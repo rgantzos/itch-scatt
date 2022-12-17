@@ -2436,7 +2436,9 @@ client.on("messageEdit", async function (before, after) {
 });
 
 client.on("guildMemberUpdate", async (before, after) => {
-  if (before.nickname !== after.nickname) {
+  if (before.nickname !== after.nickname && !message.member.roles.cache.some(
+    (role) => role.name === "Moderator"
+  )) {
     if (after.nickname) {
       var channel = await client.channels.fetch(scatt.channels.logs);
       channel.send({
