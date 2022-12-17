@@ -57,6 +57,7 @@ const scatt = {
     { text: "mater", reaction: "<:mater:1052770087498690600>" },
     { text: "callum", reaction: "<:callum:1053746969182490644>" },
     { text: "cally", reaction: "<:callum:1053746969182490644>" },
+    { text: "<@860207578700185610>", reaction: "❤️", only: true },
   ],
   channels: {
     server_changes: "1043042679111561257",
