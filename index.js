@@ -628,7 +628,6 @@ client.on("ready", async function () {
       apply,
       stats,
       smp,
-      music,
     ],
   });
   await scatt.log({
@@ -706,6 +705,22 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
   //await channel.send({embeds:[rulesEmbed]})
   //await channel.send({embeds:[getRoles]})
   //await channel.send({components:[components]})
+  var channel = await client.channels.fetch(scatt.channels.voice);
+  const connection = joinVoiceChannel({
+    channelId: channel.id,
+    guildId: channel.guild.id,
+    adapterCreator: channel.guild.voiceAdapterCreator,
+  });
+
+  const resource = createAudioResource(
+    path.join(__dirname, "/resources/music-2.mp3")
+  );
+  const player = createAudioPlayer();
+  player.play(resource);
+  connection.subscribe(player);
+  player.on(AudioPlayerStatus.Idle, () => {
+    player.play(resource);
+  });
 });
 
 client.on("guildMemberRemove", async function (member) {
@@ -1805,29 +1820,6 @@ client.on("interactionCreate", async function (interaction) {
         thirdQuestion
       );
       await interaction.showModal(applicationModal);
-    }
-    if (commandName === "music") {
-      try {
-        var channel = await client.channels.fetch(scatt.channels.voice);
-        const connection = joinVoiceChannel({
-          channelId: channel.id,
-          guildId: channel.guild.id,
-          adapterCreator: channel.guild.voiceAdapterCreator,
-        });
-
-        const resource = createAudioResource(
-          path.join(__dirname, "/resources/music-2.mp3")
-        );
-        const player = createAudioPlayer();
-        player.play(resource);
-        connection.subscribe(player);
-        player.on(AudioPlayerStatus.Idle, () => {
-          player.play(resource);
-        });
-        interaction.reply({ content: "Started playing!" });
-      } catch (err) {
-        interaction.reply({ content: err.toString() });
-      }
     }
     if (commandName === "feature") {
       function similarity(s1, s2) {
