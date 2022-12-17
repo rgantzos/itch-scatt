@@ -1816,7 +1816,7 @@ client.on("interactionCreate", async function (interaction) {
         });
 
         const resource = createAudioResource(
-          join(__dirname, "/resources/music.mp3")
+          path.join(__dirname, "/resources/music.mp3")
         );
         const player = createAudioPlayer();
         player.play(resource);
