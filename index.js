@@ -710,6 +710,8 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
 
 client.on("guildMemberRemove", async function (member) {
   if (member.guild.id === scatt.server) {
+    var count = member.guild.memberCount
+    await (await client.channels.fetch("945348551599349770")).setName("😎 General - "+count.toString()+"/500 Members")
     var logs = await client.channels.fetch(scatt.channels.logs);
     logs.send({
       content: `<:goodbye:1043391556553555978> <@${member.id}> just left.`,
@@ -779,6 +781,8 @@ async function getWeeklyLeaderboard() {
 
 client.on("guildMemberAdd", async function (member) {
   if (member.guild.id === scatt.server) {
+    var count = member.guild.memberCount
+    await (await client.channels.fetch("945348551599349770")).setName("😎 General - "+count.toString()+"/500 Members")
     var possibleMessages = [
       `Woah, let's welcome <@${member.user.id}> to the best server ever!`,
       `Wow!!! It's the real <@${member.user.id}>!! Welcome!`,
