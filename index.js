@@ -1076,40 +1076,6 @@ client.on("messageCreate", async function (message) {
       message.react(el.reaction);
     }
   });
-  if (message.channel.id === scatt.answer && message.author.id !== client.user.id) {
-    if (message.referenceId) {
-      var original = await dbClient
-        .db("Scatt")
-        .collection("ask")
-        .findOne({ copy: message.referenceId });
-      if (original) {
-        var originalMsg = await (
-          await client.channels.fetch(scatt.ask)
-        ).messages.fetch(original.id);
-        if (originalMsg) {
-          var msg = await originalMsg.reply({
-            content: message.content,
-            files: message.attachments.map((attachment) => attachment),
-          });
-          await dbClient.db("Scatt").collection("ask").insertOne({
-            copy: message.id,
-            id: msg.id,
-          });
-        }
-      }
-    } else {
-      var msg = await (
-        await client.channels.fetch(scatt.ask)
-      ).send({
-        content: message.content,
-        files: message.attachments.map((attachment) => attachment),
-      });
-      await dbClient.db("Scatt").collection("ask").insertOne({
-        copy: message.id,
-        id: msg.id,
-      });
-    }
-  }
   if (
     message.channel.type !== 1 &&
     message.channel.parentId !== scatt.simulate &&
