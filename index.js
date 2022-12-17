@@ -1821,7 +1821,10 @@ client.on("interactionCreate", async function (interaction) {
         const player = createAudioPlayer();
         player.play(resource);
         connection.subscribe(player);
-        interaction.reply({ content: "well it worked" });
+        player.on(AudioPlayerStatus.Idle, () => {
+          player.play(resource);
+        });
+        interaction.reply({ content: "Started playing!" });
       } catch (err) {
         interaction.reply({ content: err.toString() });
       }
