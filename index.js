@@ -72,7 +72,7 @@ const scatt = {
     music: "1054089467306188880",
   },
   min_reactions: 3,
-  rgantzos: "810336621198835723",
+  rgantzos: "1046535824461807737",
   cookieCamper: {
     minimumRank: 10,
     role: "1054091414742519878",
