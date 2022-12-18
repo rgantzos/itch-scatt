@@ -624,7 +624,6 @@ const warnings = new SlashCommandBuilder()
 
 client.on("ready", async function () {
   console.log("Logged in as " + client.user.tag + "!");
-  weeklyActive()
   await rest.put(Routes.applicationCommands(client.user.id), {
     body: [
       xp,
