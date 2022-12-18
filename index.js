@@ -71,7 +71,7 @@ const scatt = {
     counting: "1054090213850361927",
     music: "1054089467306188880",
   },
-  min_reactions: 3,
+  min_reactions: 2,
   rgantzos: "1046535824461807737",
   cookieCamper: {
     minimumRank: 10,
