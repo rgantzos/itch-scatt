@@ -60,43 +60,39 @@ const scatt = {
     { text: "<@860207578700185610>", reaction: "❤️", only: true },
   ],
   channels: {
-    server_changes: "1043042679111561257",
-    modmail: "954823644415135826",
-    cookieboard: "955181553535832145",
-    logs: "1046079063447584849",
-    info: "945342441987391548",
-    bots: "964549623375101962",
-    welcome: "945348575083233290",
-    welcoming: "973239218518245386",
-    staff_cmd: "945351020530245652",
-    counting: "945352412779126885",
-    music: "1053697894517047378",
+    server_changes: "1046903258360336519",
+    modmail: "1048373435274891346",
+    cookieboard: "1054090610480517190",
+    logs: "1048373334162800821",
+    info: "1046903258360336518",
+    bots: "1053836683264663632",
+    welcome: "1046903258825883719",
+    staff_cmd: "1048373292102324337",
+    counting: "1054090213850361927",
+    music: "1054089467306188880",
   },
-  min_reactions: 5,
+  min_reactions: 3,
   rgantzos: "810336621198835723",
   cookieCamper: {
-    minimumRank: 35,
-    role: "976671111372759070",
-    main_channel: "1043218898901799053",
+    minimumRank: 10,
+    role: "1054091414742519878",
+    main_channel: "1054091800937234612",
   },
   top_member: {
-    role: "1043681441327874078",
-    count: 10,
+    role: "1054091459889987734",
+    count: 5,
   },
   server: "945340853189247016",
   ping_roles: {
-    scratch: "978771942981132368",
-    developer: "978771991551180890",
-    events: "978772038154088472",
-    updates: "1018005551675879454",
-    random: "1043354855617597461",
+    news: "1051228444958150769",
+    updates: "1051228532791058553",
+    random: "1051228279673192528",
   },
   active: {
-    minimum: 50,
-    role: "1043052399943761980",
+    minimum: 20,
+    role: "1054091498322407474",
   },
-  moderator: "961725317427384442",
-  smp: "1051215713475493920",
+  moderator: "1053810809102413905",
   whitelist: [
     "fart",
     "sex",
@@ -232,7 +228,7 @@ const client = new scatt.discordJs.Client({
     status: "ONLINE",
     activities: [
       {
-        name: `ScratchTools`,
+        name: `Itch`,
         type: "WATCHING",
       },
     ],
@@ -287,7 +283,7 @@ function getConfigurationEmbed(full) {
       },
       { name: "Moderator", value: `<@&${scatt.moderator}>`, inline: false },
       {
-        name: "Cookie Camper",
+        name: "Doghouse Owner",
         value: `Role: <@&${
           scatt.cookieCamper.role
         }>\nMinimum Rank: ${scatt.cookieCamper.minimumRank.toString()}\nChannel: <#${
@@ -434,26 +430,12 @@ const roles = new SlashCommandBuilder()
   .addBooleanOption((option) =>
     option
       .setName("updates")
-      .setDescription("These pings include changes for ScratchTools.")
+      .setDescription("These pings include changes for Itch.")
   )
   .addBooleanOption((option) =>
     option
-      .setName("events")
-      .setDescription(
-        "These pings include events going on in the server that you can play."
-      )
-  )
-  .addBooleanOption((option) =>
-    option
-      .setName("scratch")
-      .setDescription("These pings include news for the Scratch website.")
-  )
-  .addBooleanOption((option) =>
-    option
-      .setName("developer")
-      .setDescription(
-        "These pings include news for developers, or cool projects to contribute to."
-      )
+      .setName("news")
+      .setDescription("These pings include news for Itch.")
   )
   .addBooleanOption((option) =>
     option
@@ -477,14 +459,6 @@ const xp = new SlashCommandBuilder()
   )
   .addSubcommand((subcommand) =>
     subcommand.setName("leaderboard").setDescription("View the XP leaderboard!")
-  );
-
-const smp = new SlashCommandBuilder()
-  .setName("smp")
-  .setDescription("Do stuff with the SMP.")
-  .setDMPermission(false)
-  .addSubcommand((subcommand) =>
-    subcommand.setName("join").setDescription("Join the ScratchTools SMP.")
   );
 
 const stats = new SlashCommandBuilder()
@@ -638,7 +612,6 @@ client.on("ready", async function () {
       feature,
       apply,
       stats,
-      smp,
       kill,
     ],
   });
@@ -649,10 +622,10 @@ client.on("ready", async function () {
   //weeklyActive()
   var channel = await client.channels.fetch(scatt.channels.info);
   var mainEmbed = new EmbedBuilder()
-    .setTitle("Welcome to the ScratchTools Server!")
+    .setTitle("Welcome to the Itch Server!")
     .setColor("Blue")
     .setDescription(
-      "We're glad to have you here! Take a look around, make suggestions, get help with projects, or just have fun! Thanks for joining, and we recommend using or contributing to ScratchTools!"
+      "We're glad to have you here! Take a look around, make suggestions, get help with projects, or just have fun! Thanks for joining, and we recommend using or contributing to Itch!"
     );
   var rulesEmbed = new EmbedBuilder()
     .setTitle("Server Rules")
@@ -692,7 +665,7 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
   var getRoles = new EmbedBuilder()
     .setTitle("How to Get Roles")
     .setDescription(
-      "Simply use `/roles` in any channel of the ScratchTools server! Then you can easily pick your roles for the server!"
+      "Simply use `/roles` in any channel of the Itch server! Then you can easily pick your roles for the server!"
     )
     .setColor("Blue");
   var components = new ActionRowBuilder().addComponents(
@@ -750,15 +723,7 @@ These rules aren’t meant to be tiring and mods reserve the right to punish you
 client.on("guildMemberRemove", async function (member) {
   if (member.guild.id === scatt.server) {
     var count = member.guild.memberCount;
-    await (
-      await client.channels.fetch("945348551599349770")
-    ).setName("😎 General - " + count.toString() + "/500 Members");
-    var logs = await client.channels.fetch(scatt.channels.logs);
-    logs.send({
-      content: `<:goodbye:1043391556553555978> <@${member.id}> just left.`,
-    });
-    var welcoming = await client.channels.fetch(scatt.channels.welcoming);
-    welcoming.send({
+    await scatt.log({
       content: `<:goodbye:1043391556553555978> <@${member.id}> just left.`,
     });
   }
@@ -822,10 +787,6 @@ async function getWeeklyLeaderboard() {
 
 client.on("guildMemberAdd", async function (member) {
   if (member.guild.id === scatt.server) {
-    var count = member.guild.memberCount;
-    await (
-      await client.channels.fetch("945348551599349770")
-    ).setName("😎 General - " + count.toString() + "/500 Members");
     var possibleMessages = [
       `Woah, let's welcome <@${member.user.id}> to the best server ever!`,
       `Wow!!! It's the real <@${member.user.id}>!! Welcome!`,
@@ -841,18 +802,6 @@ client.on("guildMemberAdd", async function (member) {
       content:
         "<:welcome:1043391559380516864> " +
         possibleMessages[Math.floor(Math.random() * possibleMessages.length)],
-    });
-    var gotit = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("gotit")
-        .setLabel("I Will Welcome Them")
-        .setStyle("Primary")
-        .setDisabled(false)
-    );
-    var banana = await client.channels.fetch(scatt.channels.welcoming);
-    await banana.send({
-      content: `<@&973238564034859109> - <@${member.user.id}> just joined!`,
-      components: [gotit],
     });
   }
 });
@@ -882,7 +831,7 @@ client.on("messageDelete", async function (message) {
 client.on("messageCreate", async function (message) {
   if (message.author.id === scatt.rgantzos && message.content === "!giveaway") {
     var giveawayEmbed = new EmbedBuilder()
-      .setTitle("ScratchTools Nitro Giveaway")
+      .setTitle("Itch Nitro Giveaway")
       .setDescription(
         "<@529773171574833152> has been kind enough to donate Nitro for a giveaway! Click the button below to join the giveaway, where a person will be selected at random!"
       )
@@ -1191,7 +1140,7 @@ client.on("messageCreate", async function (message) {
         leaderboard[0].xp <= user.xp + 28
       ) {
         message.author.send({
-          content: `🥳 Congrats! You've just taken 1st on the ScratchTools leaderboard at ${(
+          content: `🥳 Congrats! You've just taken 1st on the Itch leaderboard at ${(
             user.xp + 28
           ).toString()} XP, passing <@${leaderboard[0].id}>!`,
         });
@@ -1251,11 +1200,11 @@ client.on("messageCreate", async function (message) {
         var member = message.member;
         var roles = await message.guild.roles.fetch();
         const role = roles.find((role) =>
-          role.name.toLowerCase().includes("cookie camper")
+          role.name.toLowerCase().includes("doghouse owner")
         );
         if (
           !message.member.roles.cache.some(
-            (role) => role.name === "Cookie Camper"
+            (role) => role.name === "doghouse owner"
           )
         ) {
           var leaderboard = await getLeaderboard();
@@ -1266,7 +1215,7 @@ client.on("messageCreate", async function (message) {
             ) {
               await member.roles.add(role, "Top 25 on leaderboard.");
               var embed = new EmbedBuilder()
-                .setTitle("🍪 Welcome to the Cookie Campers!")
+                .setTitle("🍪 Welcome to the Doghouse Owners!")
                 .setDescription(
                   "You're at this *exclusive* camp now because you're in the top " +
                     scatt.cookieCamper.minimumRank.toString() +
@@ -1383,7 +1332,7 @@ client.on("messageCreate", async function (message) {
         }
         message.author.send({
           content:
-            "<:unsuccessful:1043300105450696765> Please remember to watch your language in the ScratchTools server, we'd like to keep it safe for everyone. We warned you for breaking the server rules, but feel free to appeal by DMing me if you think it was a mistake.",
+            "<:unsuccessful:1043300105450696765> Please remember to watch your language in the Itch server, we'd like to keep it safe for everyone. We warned you for breaking the server rules, but feel free to appeal by DMing me if you think it was a mistake.",
         });
         message.delete();
       }
@@ -1417,7 +1366,7 @@ client.on("messageCreate", async function (message) {
         }
       } else {
         var startModmail = new EmbedBuilder()
-          .setTitle("ScratchTools Modmail")
+          .setTitle("Itch Modmail")
           .setDescription(
             "If you would like to have a private conversation with our moderation team via Scatt, click the button below to open a modmail. Your messages will then be relayed through Scatt to our mod team."
           )
@@ -1652,7 +1601,7 @@ client.on("interactionCreate", async function (interaction) {
         .setDisabled(true)
     );
 
-    var content = `<:successful:1043300109921829054> Thanks for welcoming <@${interaction.user.id}>!\n\nWe gave you 1,000 XP for welcoming them- please don't forget to welcome them, though! You won't receive your XP if you don't actually welcome them.\n\nMake sure you let them know this:\n1. Please welcome them\n2. Tell them to ask a server moderator if they need anything\n\nThank you so much!\n- ScratchTools Server`;
+    var content = `<:successful:1043300109921829054> Thanks for welcoming <@${interaction.user.id}>!\n\nWe gave you 1,000 XP for welcoming them- please don't forget to welcome them, though! You won't receive your XP if you don't actually welcome them.\n\nMake sure you let them know this:\n1. Please welcome them\n2. Tell them to ask a server moderator if they need anything\n\nThank you so much!\n- Itch Server`;
 
     await interaction.message.edit({
       content: interaction.message.content,
@@ -2033,7 +1982,7 @@ client.on("interactionCreate", async function (interaction) {
               .setTitle("Modmail Closed")
               .setDescription(
                 interaction.options.getString("reason") ||
-                  "This modmail has been closed by the moderation team from ScratchTools. You can open another one in the future if you need anything. Thanks for talking with us."
+                  "This modmail has been closed by the moderation team from Itch. You can open another one in the future if you need anything. Thanks for talking with us."
               )
               .setColor("Blurple");
             user.send({ embeds: [closedEmbed] });
@@ -2072,7 +2021,7 @@ client.on("interactionCreate", async function (interaction) {
           var openEmbed = new EmbedBuilder()
             .setTitle("Modmail Opened")
             .setDescription(
-              "A member of the ScratchTools moderation team has decided to open a modmail with you. You can chat with me and messages will be relayed between you and our moderation team."
+              "A member of the Itch moderation team has decided to open a modmail with you. You can chat with me and messages will be relayed between you and our moderation team."
             )
             .setColor("Blurple");
           interaction.reply({
@@ -2097,7 +2046,7 @@ client.on("interactionCreate", async function (interaction) {
       }
     }
     if (commandName === "invite") {
-      var message = `Hi there! It's Scatt, from the ScratchTools server.\n\nScratchTools is run by a team of developers who, for the most part, started out on Scratch. We're open-source and completely free, so we rely on community members to contribute in code. One of us checked out some of the stuff you've done, and we think you're a great fit for contributing to ScratchTools.\n\nYou don't have to be on the ScratchTools *Team* to contribute. You can make a one-time code contribution to ScratchTools, or you can contribute over and over again. There are no commitments.\n\nHere are the skills needed:\n- JavaScript, HTML, **or** CSS\n\nYeah, that's it. And if you ever need help with anything at all, it's super simple to just ask for help from any of our other developers, who would always LOVE to help you out.\n\nWe would really appreciate it if you were able to contribute, but we completely understand if you don't have the time, ability, or want to contribute. Thanks for reading this message though, and we hope you're able to contribute.\n\n**To get started:**\nJust DM rgantzos!\n\n- Scatt, and the rest of the developer team`;
+      var message = `Hi there! It's Scatt, from the Itch server.\n\nItch is run by a team of developers who, for the most part, started out on Scratch. We're open-source and completely free, so we rely on community members to contribute in code. One of us checked out some of the stuff you've done, and we think you're a great fit for contributing to Itch.\n\nYou don't have to be on the Itch *Team* to contribute. You can make a one-time code contribution to Itch, or you can contribute over and over again. There are no commitments.\n\nHere are the skills needed:\n- JavaScript, HTML, **or** CSS\n\nYeah, that's it. And if you ever need help with anything at all, it's super simple to just ask for help from any of our other developers, who would always LOVE to help you out.\n\nWe would really appreciate it if you were able to contribute, but we completely understand if you don't have the time, ability, or want to contribute. Thanks for reading this message though, and we hope you're able to contribute.\n\n**To get started:**\nJust DM rgantzos!\n\n- Scatt, and the rest of the developer team`;
       interaction.options.getUser("member").send({ content: message });
       interaction.reply({
         content:
