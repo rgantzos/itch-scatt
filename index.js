@@ -174,15 +174,6 @@ async function weeklyActive() {
 let getWeeklyActive = new CronJob("0 0 * * 0,3", weeklyActive);
 getWeeklyActive.start();
 
-let getUserCountForChannelName = new CronJob("*/10 * * * *", async function () {
-  var response = await fetch(
-    "https://raw.githubusercontent.com/STForScratch/website2/main/data/usercount.json"
-  );
-  var data = await response.json();
-  var channel = await client.channels.fetch("961650991151845398");
-  await channel.setName(`🍪 Welcome - ${data.count.toString()} Users`);
-});
-getUserCountForChannelName.start();
 
 async function resetCookieCampers() {
   var lb = await getLeaderboard();
@@ -1215,7 +1206,7 @@ client.on("messageCreate", async function (message) {
             ) {
               await member.roles.add(role, "Top 25 on leaderboard.");
               var embed = new EmbedBuilder()
-                .setTitle("🍪 Welcome to the Doghouse Owners!")
+                .setTitle("🦴 Welcome to the Doghouse Owners!")
                 .setDescription(
                   "You're at this *exclusive* camp now because you're in the top " +
                     scatt.cookieCamper.minimumRank.toString() +
@@ -1386,7 +1377,7 @@ client.on("messageCreate", async function (message) {
 
 client.on("messageReactionRemove", async function (reaction, user) {
   try {
-    if (reaction._emoji.name === "🍪") {
+    if (reaction._emoji.name === "🦴") {
       await reaction.fetch();
       var existingMessage = await dbClient
         .db("Scatt")
@@ -1403,7 +1394,7 @@ client.on("messageReactionRemove", async function (reaction, user) {
           await discordExistingMessage.edit({
             content: `<@${
               reaction.message.author.id
-            }> | 🍪x${reaction.count.toString()}`,
+            }> | 🦴x${reaction.count.toString()}`,
             allowedMentions: { users: [] },
           });
         }
@@ -1416,7 +1407,7 @@ client.on("messageReactionRemove", async function (reaction, user) {
 
 client.on("messageReactionAdd", async function (reaction, user) {
   try {
-    if (reaction._emoji.name === "🍪") {
+    if (reaction._emoji.name === "🦴") {
       await reaction.fetch();
       var existingMessage = await dbClient
         .db("Scatt")
@@ -1433,7 +1424,7 @@ client.on("messageReactionAdd", async function (reaction, user) {
           await discordExistingMessage.edit({
             content: `<@${
               reaction.message.author.id
-            }> | 🍪x${reaction.count.toString()}`,
+            }> | 🦴x${reaction.count.toString()}`,
             allowedMentions: { users: [] },
           });
         }
@@ -1461,7 +1452,7 @@ client.on("messageReactionAdd", async function (reaction, user) {
               iconURL: reaction.message.author.avatarURL(),
             })
             .setFooter({
-              text: "React to messages with a 🍪 to get them here!",
+              text: "React to messages with a 🦴 to get them here!",
             })
             .setColor(reaction.message.member.displayHexColor)
             .setTimestamp(reaction.message.createdTimestamp);
@@ -1478,7 +1469,7 @@ client.on("messageReactionAdd", async function (reaction, user) {
             embeds: [embed],
             content: `<@${
               reaction.message.author.id
-            }> | 🍪x${reaction.count.toString()}`,
+            }> | 🦴x${reaction.count.toString()}`,
             components: [row],
             files: reaction.message.attachments.map((attachment) => attachment),
           });
