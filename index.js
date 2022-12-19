@@ -174,7 +174,6 @@ async function weeklyActive() {
 let getWeeklyActive = new CronJob("0 0 * * 0,3", weeklyActive);
 getWeeklyActive.start();
 
-
 async function resetCookieCampers() {
   var lb = await getLeaderboard();
   var actuallySupposedTo = [];
@@ -405,7 +404,7 @@ const music = new SlashCommandBuilder()
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
   .setDescription("Play music in voice channel.");
 
-  const kill = new SlashCommandBuilder()
+const kill = new SlashCommandBuilder()
   .setName("kill")
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
   .setDMPermission(false)
@@ -424,9 +423,7 @@ const roles = new SlashCommandBuilder()
       .setDescription("These pings include changes for Itch.")
   )
   .addBooleanOption((option) =>
-    option
-      .setName("news")
-      .setDescription("These pings include news for Itch.")
+    option.setName("news").setDescription("These pings include news for Itch.")
   )
   .addBooleanOption((option) =>
     option
@@ -1046,45 +1043,47 @@ client.on("messageCreate", async function (message) {
       });
     }
     if (message.author.id !== client.user.id) {
-      var fakeChannel = await client.channels.fetch(scatt.simulate);
-      if (fakeChannel) {
-        var existingThread = await fakeChannel.threads.cache.find(
-          (x) => x.name === message.channel.id
-        );
-        if (existingThread) {
-          var webhook = new WebhookClient({
-            url: process.env.simulationWebhook,
-          });
-          await webhook.send({
-            content: message.content,
-            files: message.attachments.map((attachment) => attachment),
-            username: message.author.username,
-            avatarURL: message.author.avatarURL(),
-            embeds: message.embeds,
-            threadId: existingThread.id,
-          });
-        } else {
-          var msg = await fakeChannel.send({
-            content: `<#${message.channel.id}>`,
-          });
-          var thread = await msg.startThread({
-            name: message.channel.id,
-            autoArchiveDuration: 1440,
-            reason: "Needed a channel for talking.",
-          });
-          var webhook = new WebhookClient({
-            url: process.env.simulationWebhook,
-          });
-          await webhook.send({
-            content: message.content,
-            files: message.attachments.map((attachment) => attachment),
-            username: message.author.username,
-            avatarURL: message.author.avatarURL(),
-            embeds: message.embeds,
-            threadId: thread.id,
-          });
+      try {
+        var fakeChannel = await client.channels.fetch(scatt.simulate);
+        if (fakeChannel) {
+          var existingThread = await fakeChannel.threads.cache.find(
+            (x) => x.name === message.channel.id
+          );
+          if (existingThread) {
+            var webhook = new WebhookClient({
+              url: process.env.simulationWebhook,
+            });
+            await webhook.send({
+              content: message.content,
+              files: message.attachments.map((attachment) => attachment),
+              username: message.author.username,
+              avatarURL: message.author.avatarURL(),
+              embeds: message.embeds,
+              threadId: existingThread.id,
+            });
+          } else {
+            var msg = await fakeChannel.send({
+              content: `<#${message.channel.id}>`,
+            });
+            var thread = await msg.startThread({
+              name: message.channel.id,
+              autoArchiveDuration: 1440,
+              reason: "Needed a channel for talking.",
+            });
+            var webhook = new WebhookClient({
+              url: process.env.simulationWebhook,
+            });
+            await webhook.send({
+              content: message.content,
+              files: message.attachments.map((attachment) => attachment),
+              username: message.author.username,
+              avatarURL: message.author.avatarURL(),
+              embeds: message.embeds,
+              threadId: thread.id,
+            });
+          }
         }
-      }
+      } catch (err) {}
     }
   }
   if (!message.author.bot && message.channel.type !== 1) {
@@ -1722,7 +1721,7 @@ client.on("interactionCreate", async function (interaction) {
   if (interaction.type === 2) {
     const { commandName } = interaction;
     if (commandName === "kill") {
-      await interaction.reply({ content: "Restarting bot..." })
+      await interaction.reply({ content: "Restarting bot..." });
       process.exit(1);
     }
     if (commandName === "smp") {
