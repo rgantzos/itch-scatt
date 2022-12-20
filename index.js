@@ -60,7 +60,7 @@ const scatt = {
     { text: "<@860207578700185610>", reaction: "❤️", only: true },
   ],
   channels: {
-    server_changes: "1046903258360336519",
+    server_changes: "1054645190939394059",
     modmail: "1048373435274891346",
     cookieboard: "1054090610480517190",
     logs: "1048373334162800821",
@@ -991,7 +991,7 @@ client.on("messageCreate", async function (message) {
                 { upsert: true }
               );
             channel.send({
-              content: `<:st_emoji_party:1008191843281936414> Wow, we just broke the record for highest number in <#${
+              content: `<:itchyay:1054456304279752714> Wow, we just broke the record for highest number in <#${
                 scatt.channels.counting
               }>! We made it all the way to ${
                 oldNumber[0].number
