@@ -1270,10 +1270,7 @@ client.on("messageCreate", async function (message) {
         .insertOne({ id: message.author.id, messages: 1 });
     }
     if (message.channel.parentId !== scatt.channels.modmail) {
-      var response = await fetch(
-        "https://raw.githubusercontent.com/web-mech/badwords/master/lib/lang.json"
-      );
-      var data = await response.json();
+      var data = [];
       var deleteMessage = false;
       var whitelist = scatt.whitelist;
       data.words.forEach(function (el) {
