@@ -1269,61 +1269,6 @@ client.on("messageCreate", async function (message) {
         .collection("daily")
         .insertOne({ id: message.author.id, messages: 1 });
     }
-    if (message.channel.parentId !== scatt.channels.modmail) {
-      var data = [];
-      var deleteMessage = false;
-      var whitelist = scatt.whitelist;
-      data.words.forEach(function (el) {
-        if (
-          message.content &&
-          (message.content.toLowerCase().includes(" " + el + " ") ||
-            message.content.toLowerCase().startsWith(el + " ") ||
-            message.content.toLowerCase().endsWith(" " + el) ||
-            message.content.toLowerCase() === el) &&
-          !whitelist.includes(el)
-        ) {
-          deleteMessage = true;
-        }
-      });
-      if (deleteMessage) {
-        var logs = await client.channels.fetch(scatt.channels.logs);
-        var msg = await logs.send({
-          content: `<@${message.author.id}> just got blocked and warned for saying: ${message.content}`,
-        });
-        message.channel.send({
-          content: `<:unsuccessful:1043300105450696765> <@${message.author.id}>, watch your language!`,
-        });
-        var warning = {
-          reason: `Cursing: ${msg.url}.`,
-          moderator: client.user.id,
-        };
-        var userWarnings = await dbClient
-          .db("Scatt")
-          .collection("warnings")
-          .findOne({ id: message.author.id });
-        if (userWarnings) {
-          userWarnings.warnings.push(warning);
-          await dbClient
-            .db("Scatt")
-            .collection("warnings")
-            .updateOne(
-              { id: message.author.id },
-              { $set: { warnings: userWarnings.warnings } },
-              { upsert: true }
-            );
-        } else {
-          await dbClient
-            .db("Scatt")
-            .collection("warnings")
-            .insertOne({ id: message.author.id, warnings: [warning] });
-        }
-        message.author.send({
-          content:
-            "<:unsuccessful:1043300105450696765> Please remember to watch your language in the Itch server, we'd like to keep it safe for everyone. We warned you for breaking the server rules, but feel free to appeal by DMing me if you think it was a mistake.",
-        });
-        message.delete();
-      }
-    }
   } else {
     if (
       message.author.id !== client.user.id &&
